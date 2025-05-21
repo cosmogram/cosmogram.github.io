@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cosmogram.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="文件管理主要内容：  文件系统基础：包括文件概念、文件的逻辑结构（顺序文件，索引文件，索引顺序文件）、目录结构（文件控制块和索引结点，单级目录结构和两级目录结构，树形目录结构，图形目录结构）、文件共享和文件保护（访问类型，访问控制）。  文件系统实现：包括文件系统层次结构、目录实现、文件实现。  磁盘组织与管理：包括磁盘的结构、磁盘调度算法、磁盘的管理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件系统接口">
+<meta property="og:url" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/index.html">
+<meta property="og:site_name" content="CosmoGram">
+<meta property="og:description" content="文件管理主要内容：  文件系统基础：包括文件概念、文件的逻辑结构（顺序文件，索引文件，索引顺序文件）、目录结构（文件控制块和索引结点，单级目录结构和两级目录结构，树形目录结构，图形目录结构）、文件共享和文件保护（访问类型，访问控制）。  文件系统实现：包括文件系统层次结构、目录实现、文件实现。  磁盘组织与管理：包括磁盘的结构、磁盘调度算法、磁盘的管理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1154912963.gif">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1155140194.gif">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1155449139.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1155P2G9.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/152015.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F116245W96.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1162SXT.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1163124E6.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F11634005Q.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F11H004348.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1155P2G9.jpg">
+<meta property="article:published_time" content="2019-06-12T06:49:40.000Z">
+<meta property="article:author" content="Zhao Zhejian">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1154912963.gif">
+
+
+<link rel="canonical" href="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/","path":"2019/06/12/文件系统接口/","title":"文件系统接口"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>文件系统接口 | CosmoGram</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CosmoGram</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZZJ's Blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E6%A6%82%E5%BF%B5%E5%92%8C%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">文件的概念和定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E5%B1%9E%E6%80%A7%E3%80%81%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E4%BB%A5%E5%8F%8A%E6%96%87%E4%BB%B6%E7%9A%84%E6%89%93%E5%BC%80%E5%92%8C%E5%85%B3%E9%97%AD"><span class="nav-number">2.</span> <span class="nav-text">文件的属性、基本操作以及文件的打开和关闭</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text">文件的属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A9%BE%E4%BD%9C"><span class="nav-number">2.2.</span> <span class="nav-text">文件的基本橾作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E6%89%93%E5%BC%80%E4%B8%8E%E5%85%B3%E9%97%AD"><span class="nav-number">2.3.</span> <span class="nav-text">文件的打开与关闭</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%EF%BC%9A%E6%97%A0%E7%BB%93%E6%9E%84%E6%96%87%E4%BB%B6-%E6%B5%81%E5%BC%8F%E6%96%87%E4%BB%B6-%E5%92%8C%E6%9C%89%E7%BB%93%E6%9E%84%E6%96%87%E4%BB%B6-%E8%AE%B0%E5%BD%95%E5%BC%8F%E6%96%87%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">文件的逻辑结构：无结构文件(流式文件)和有结构文件(记录式文件)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E7%BB%93%E6%9E%84%E6%96%87%E4%BB%B6%EF%BC%88%E6%B5%81%E5%BC%8F%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">无结构文件（流式文件）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E7%BB%93%E6%9E%84%E6%96%87%E4%BB%B6%EF%BC%88%E8%AE%B0%E5%BD%95%E5%BC%8F%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">有结构文件（记录式文件）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E6%96%87%E4%BB%B6%E3%80%82"><span class="nav-number">3.2.1.</span> <span class="nav-text">顺序文件。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E6%96%87%E4%BB%B6%E3%80%82"><span class="nav-number">3.2.2.</span> <span class="nav-text">索引文件。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E9%A1%BA%E5%BA%8F%E6%96%87%E4%BB%B6%E3%80%82"><span class="nav-number">3.2.3.</span> <span class="nav-text">索引顺序文件。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E6%96%87%E4%BB%B6%E6%88%96%E6%95%A3%E5%88%97%E6%96%87%E4%BB%B6-Hash-File"><span class="nav-number">3.2.4.</span> <span class="nav-text">直接文件或散列文件(Hash File)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%EF%BC%9A%E5%8D%95%E7%BA%A7%E3%80%81%E4%B8%A4%E7%BA%A7%E3%80%81%E5%A4%9A%E7%BA%A7-%E6%A0%91%E5%BD%A2-%E5%92%8C%E6%97%A0%E7%8E%AF%E5%9B%BE%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">文件目录结构：单级、两级、多级(树形)和无环图目录结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%8E%A7%E5%88%B6%E5%9D%97%E5%92%8C%E7%B4%A2%E5%BC%95%E7%BB%93%E7%82%B9"><span class="nav-number">4.1.</span> <span class="nav-text">文件控制块和索引结点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">4.2.</span> <span class="nav-text">目录结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E7%BA%A7%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E3%80%82"><span class="nav-number">4.2.1.</span> <span class="nav-text">单级目录结构。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E7%BA%A7%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E3%80%82"><span class="nav-number">4.2.2.</span> <span class="nav-text">两级目录结构。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BA%A7%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%EF%BC%88%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84-%E3%80%82"><span class="nav-number">4.2.3.</span> <span class="nav-text">多级目录结构（树形目录结构)。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E7%8E%AF%E5%9B%BE%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E3%80%82"><span class="nav-number">4.2.4.</span> <span class="nav-text">无环图目录结构。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6%EF%BC%9A%E7%A1%AC%E9%93%BE%E6%8E%A5%E5%92%8C%E8%BD%AF%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">共享文件：硬链接和软链接</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%B4%A2%E5%BC%95%E7%BB%93%E7%82%B9%E7%9A%84%E5%85%B1%E4%BA%AB%E6%96%B9%E5%BC%8F%EF%BC%88%E7%A1%AC%E9%93%BE%E6%8E%A5%EF%BC%89"><span class="nav-number">5.1.</span> <span class="nav-text">基于索引结点的共享方式（硬链接）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E7%AC%A6%E5%8F%B7%E9%93%BE%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%EF%BC%88%E8%BD%AF%E9%93%BE%E6%8E%A5%EF%BC%89"><span class="nav-number">5.2.</span> <span class="nav-text">利用符号链实现文件共享（软链接）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4%EF%BC%9A%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6"><span class="nav-number">6.</span> <span class="nav-text">文件保护：文件访问类型和访问控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">6.1.</span> <span class="nav-text">访问类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6"><span class="nav-number">6.2.</span> <span class="nav-text">访问控制</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zhao Zhejian"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Zhao Zhejian</p>
+  <div class="site-description" itemprop="description">愚者困惑，智者提问</div>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cosmogram" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/zhaozhejian@mail.ustc.edu.cn" title="E-Mail → zhaozhejian@mail.ustc.edu.cn"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/291014857" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;291014857" rel="noopener" target="_blank"><i class="fa custom bilibili fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/CosmogramZhao" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/zhaozhejian" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;zhaozhejian" rel="noopener" target="_blank"><i class="fab fa-facebook fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/CosmogramZhao" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/id/cosmogram" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;id&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-steam fa-fw"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://zzj960.github.io/" title="https:&#x2F;&#x2F;zzj960.github.io&#x2F;" rel="noopener" target="_blank">My first blog (abandoned)</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cosmogram.github.io/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhao Zhejian">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CosmoGram">
+      <meta itemprop="description" content="愚者困惑，智者提问">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="文件系统接口 | CosmoGram">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          文件系统接口
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-06-12 14:49:40" itemprop="dateCreated datePublished" datetime="2019-06-12T14:49:40+08:00">2019-06-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">存储管理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>11k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>10 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><strong>文件管理</strong><br>主要内容：</p>
+<ul>
+<li><p>文件系统基础：包括文件概念、文件的逻辑结构（顺序文件，索引文件，索引顺序文件）、目录结构（文件控制块和索引结点，单级目录结构和两级目录结构，树形目录结构，图形目录结构）、文件共享和文件保护（访问类型，访问控制）。</p>
+</li>
+<li><p>文件系统实现：包括文件系统层次结构、目录实现、文件实现。</p>
+</li>
+<li><p>磁盘组织与管理：包括磁盘的结构、磁盘调度算法、磁盘的管理。</p>
+<span id="more"></span>
+
+<h1 id="文件的概念和定义"><a href="#文件的概念和定义" class="headerlink" title="文件的概念和定义"></a>文件的概念和定义</h1><p>文件(File)是操作系统中的一个重要概念。</p>
+<p><em>在系统运行时，计算机以进程为基本单位进行资源的调度和分配；而在用户进行的输入、输出中，则以文件为基本单位。</em></p>
+<p>大多数应用程序的输入都是通过文件来实现的，其输出也都保存在文件中，以便信息的长期存及将来的访问。当用户将文件用于应用程序的输入、输出时，还希望可以访问文件、修改文件和保存文件等，实现对文件的维护管理，这就需要系统提供一个文件管理系统，操作系统中的文件系统(File System)就是用于实现用户的这些管理要求。</p>
+<p>从用户的角度看，文件系统是操作系统的重要部分之一。用户关心的是如何命名、分类和查找文件，如何保证文件数据的安全性以及对文件可以进行哪些操作等。而对其中的细节，如文件如何存储在辅存上、如何管理文件辅存区域等关心甚少。</p>
+<p>文件系统提供了与二级存储相关的资源的抽象，让用户能在不了解文件的各种属性、文件存储介质的特征以及文件在存储介质上的具体位置等情况下，方便快捷地使用文件。</p>
+</li>
+</ul>
+<p>用户通过文件系统建立文件，提供应用程序的输入、输出，对资源进行管理。首先了解文件的结构，我们通过自底向上的方式来定义。</p>
+<ol>
+<li>数据项<br>数据项是文件系统中最低级的数据组织形式，可分为以下两种类型：<br>基本数据项：用于描述一个对象的某种属性的一个值，如姓名、日期或证件号等，是数据中可命名的最小逻辑数据单位，即原子数据。<br>组合数据项：由多个基本数据项组成。</li>
+<li>记录<br>记录是一组相关的数据项的集合，用于描述一个对象在某方面的属性，如一个考生报名记录包括考生姓名、出生日期、报考学校代号、身份证号等一系列域。</li>
+<li>文件<br>文件是指由创建者所定义的一组相关信息的集合，逻辑上可分为<em><strong>有结构文件和无结构文件</strong></em>两种。在有结构文件中，文件由一组相似记录组成，如报考某学校的所有考生的报考信息记录，又称记录式文件；而无结构文件则被看成是一个字符流，比如一个二进制文件或字符文件，又称流式文件。</li>
+</ol>
+<p>虽然上面给出了结构化的表述，但实际上关于文件并无严格的定义。<em><strong>通常在操作系统中将程序和数据组织成文件。文件可以是数字、字母或二进制代码，基本访问单元可以是字节、 行或记录。文件可以长期存储于硬盘或其他二级存储器中,允许可控制的进程间共享访问，能够被组织成复杂的结构。</strong></em></p>
+<h1 id="文件的属性、基本操作以及文件的打开和关闭"><a href="#文件的属性、基本操作以及文件的打开和关闭" class="headerlink" title="文件的属性、基本操作以及文件的打开和关闭"></a>文件的属性、基本操作以及文件的打开和关闭</h1><h2 id="文件的属性"><a href="#文件的属性" class="headerlink" title="文件的属性"></a>文件的属性</h2><p>文件有一定的属性，这根据系统的不同而有所不同，但是通常都包括如下属性：</p>
+<p>①名称：文件名称唯一，以容易读取的形式保存。<br>②标识符：标识文件系统内文件的唯一标签,通常为数字，它是对人不可读的一种内部名称。<br>③类型：被支持不同类型的文件系统所使用。<br>④位置：指向设备和设备上文件的指针。<br>⑤大小：文件当前大小（用字节、字或块表示），也可包含文件允许的最大值。<br>⑥保护：对文件进行保护的访问控制信息。<br>⑦时间、日期和用户标识：文件创建、上次修改和上次访问的相关信息，用于保护、 安全和跟踪文件的使用。</p>
+<p><em><strong>所有文件的信息都保存在目录结构中，而目录结构也保存在外存上。</strong></em>文件信息当需要时再调入内存。通常，目录条目包括文件名称及其唯一标识符，而标识符定位其他属性的信息。</p>
+<h2 id="文件的基本橾作"><a href="#文件的基本橾作" class="headerlink" title="文件的基本橾作"></a>文件的基本橾作</h2><p>文件属于抽象数据类型。为了恰当地定义文件，就需要考虑有关文件的操作。操作系统提供系统调用，它对文件进行创建、写、读、定位和截断。.</p>
+<p>①创建文件：<em><strong>创建文件有两个必要步骤</strong></em>，一是在文件系统中为文件找到空间；二是在目录中为新文件创建条目，该条目记录文件名称、在文件系统中的位置及其他可能信息。<br>②写文件：为了写文件，执行一个系统调用，指明文件名称和要写入文件的内容。对于给定文件名称，系统搜索目录以查找文件位置。系统必须为该文件维护一个写位置的指针。每当发生写操作，便更新写指针。<br>③读文件：为了读文件，执行一个系统调用，指明文件名称和要读入文件块的内存位置。同样，需要搜索目录以找到相关目录项，系统维护一个读位置的指针。每当发生读操作时，更新读指针。一个进程通常只对一个文件读或写，所以当前操作位置可作为每个进程当前文件位置指针。由于读和写操作都使用同一指针，节省了空间也降低了系统复杂度。<br>④文件重定位（文件寻址）：按某条件搜索目录，将当前文件位置设为给定值，并且不会读、写文件。<br>⑤删除文件：先从目录中找到要删除文件的目录项，使之成为空项，然后回收该文件所占用的存储空间。<br>⑥截断文件：允许文件所有属性不变，并删除文件内容，即将其长度设为0并释放其空间。</p>
+<p>这6个基本操作可以组合执行其他文件操作。例如，一个文件的复制，可以创建新文件、 从旧文件读出并写入到新文件。</p>
+<h2 id="文件的打开与关闭"><a href="#文件的打开与关闭" class="headerlink" title="文件的打开与关闭"></a>文件的打开与关闭</h2><p>因为许多文件操作都涉及为给定文件搜索相关目录条目，许多系统要求在首次使用文件时，使用系统调用open，将指明文件的属性（包括该文件在外存上的物理位置）从外存拷贝到内存打开文件目录表的一个表目中，并将该表目的编号（或称为索引）返回给用户。操作系统维护一个包含所有打开文件信息的表（打开文件表，open-file table）。当用户需要一个文件操作时，可通过该表的一个索引指定文件，就省略了搜索环节。当文件不再使用时，进程可以关闭它，操作系统从打开文件表中删除这一条目。</p>
+<p>大部分操作系统要求在文件使用之前就被显式地打开。操作open会根据文件名搜索目录，并将目录条目复制到打开文件表。如果调用open的请求（创建、只读、读写、添加等）得到允许，进程就可以打开文件，而open通常返回一个指向打开文件表中的一个条目的指针。通过使用该指计（而非文件名）进行所有I&#x2F;O操作，以简化步骤并节省资源。</p>
+<p>整个系统表包含进程相关信息，如文件在磁盘的位置、访问日期和大小。一个进程打开一个文件，系统打开文件表就会为打开的文件增加相应的条目。当另一个进程执行open时，只不过是在其进程打开表中增加一个条目，并指向整个系统表的相应条目。通常，系统打开文件表的每个文件时，还用一个文件打开计数器(Open Count)，以记录多少进程打开了该文件。每个关闭操作close则使count递减，当打开计数器为0时，表示该文件不再被使用。系统将回收分配给该文件的内存空间等资源，若文件被修改过，则将文件写回外存，并将系统打开文件表中相应条目删除，最后释放文件的文件控制块(File Control Block, FCB)。</p>
+<p>每个打开文件都有如下关联信息：</p>
+<ul>
+<li>文件指针：系统跟踪上次读写位置作为当前文件位置指针，这种指针对打开文件的某个进程来说是唯一的，因此必须与磁盘文件属性分开保存。</li>
+<li>文件打开计数：文件关闭时，操作系统必须重用其打开文件表条目，否则表内空间会不够用。因为多个进程可能打开同一个文件，所以系统在删除打开文件条目之前，必须等待最后一个进程关闭文件。该计数器跟踪打开和关闭的数量，当该计数为0 时，系统关闭文件，删除该条目。</li>
+<li>文件磁盘位置：绝大多数文件操作都要求系统修改文件数据。该信息保存在内存中以免为每个操作都从磁盘中读取。</li>
+<li>访问权限：每个进程打开文件都需要有一个访问模式（创建、只读、读写、添加等)。该信息保存在进程的打开文件表中以便操作系统能允许或拒绝之后的I&#x2F;O请求。</li>
+</ul>
+<h1 id="文件的逻辑结构：无结构文件-流式文件-和有结构文件-记录式文件"><a href="#文件的逻辑结构：无结构文件-流式文件-和有结构文件-记录式文件" class="headerlink" title="文件的逻辑结构：无结构文件(流式文件)和有结构文件(记录式文件)"></a>文件的逻辑结构：无结构文件(流式文件)和有结构文件(记录式文件)</h1><p>文件的<em><strong>逻辑结构是从用户观点出发看到的文件的组织形式</strong></em>。文件的<em><strong>物理结构是从实现观点出发，又称为文件的存储结构</strong></em>，是指文件在外存上的存储组织形式。文件的逻辑结构与存储介质特性无关，但文件的物理结构与存储介质的特性有很大关系。</p>
+<p>按逻辑结构，文件有无结构文件和有结构文件两种类型：无结构文件和有结构文件。</p>
+<h2 id="无结构文件（流式文件）"><a href="#无结构文件（流式文件）" class="headerlink" title="无结构文件（流式文件）"></a>无结构文件（流式文件）</h2><p>无结构文件是最简单的文件组织形式。无结构文件将数据按顺序组织成记录并积累保存，它是有序相关信息项的集合，以字节(Byte)为单位。由于无结构文件没有结构，因而对记录的访问只能通过穷举搜索的方式，故这种文件形式对大多数应用不适用。但字符流的无结构文件管理简单，用户可以方便地对其进行操作。所以，那些对基本信息单位操作不多的文件较适于釆用字符流的无结构方式，如源程序文件、目标代码文件等。</p>
+<h2 id="有结构文件（记录式文件）"><a href="#有结构文件（记录式文件）" class="headerlink" title="有结构文件（记录式文件）"></a>有结构文件（记录式文件）</h2><p>有结构文件按记录的组织形式可以分为：</p>
+<h3 id="顺序文件。"><a href="#顺序文件。" class="headerlink" title="顺序文件。"></a>顺序文件。</h3><p>文件中的记录一个接一个地顺序排列，记录可以是定长的或变长的，可以顺序存储或以链表形式存储，在访问时需要顺序搜索文件。顺序文件有以下两种结构：</p>
+<p>第一种是串结构，记录之间的顺序与关键字无关。通常的办法是由时间决定，即按存入时间的先后排列，最先存入的记录作为第1个记录，其次存入的为第2个记录，依此类推。</p>
+<p>第二种是顺序结构，指文件中的所有记录按关键字顺序排列。</p>
+<p>在对记录进行批量操作时，即每次要读或写一大批记录，对顺序文件的效率是所有逻辑文件中最高的；此外，也只有顺序文件才能存储在磁带上，并能有效地工作，但顺序文件对查找、修改、增加或删除单个记录的操作比较困难。</p>
+<h3 id="索引文件。"><a href="#索引文件。" class="headerlink" title="索引文件。"></a>索引文件。</h3><p>如下图所示。对于定长记录文件，如果要查找第i个记录，可直接根据下式计算来获得第i个记录相对于第一个记录的地址：<br><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1154912963.gif" alt="img"></p>
+<p>然而，对于可变长记录的文件，要查找第i个记录时，必须顺序地查找前i-1个记录，从而获得相应记录的长度L，然后才能按下式计算出第i个记录的首址：<br><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1155140194.gif" alt="img"></p>
+<p>注意：假定每个记录前用一个字节指明该记录的长度。<br><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1155449139.jpg" alt="img"></p>
+<center>索引文件示意图</center>
+
+<p>变长记录文件只能顺序查找，系统开销较大。为此可以建立一张索引表以加快检索速度，索引表本身是定长记录的顺序文件。在记录很多或是访问要求高的文件中，需要引入索引以提供有效的访问。实际中，<em>通过索引可以成百上千倍地提高访问速度</em>。</p>
+<h3 id="索引顺序文件。"><a href="#索引顺序文件。" class="headerlink" title="索引顺序文件。"></a>索引顺序文件。</h3><p>索引顺序文件是顺序和索引两种组织形式的结合。索引顺序文件将顺序文件中的所有记录分为若干个组，为顺序文件建立一张索引表，在索引表中为每组中的第一个记录建立一个索引项，其中含有该记录的关键字值和指向该记录的指针。</p>
+<p>如下图所示，主文件名包含姓名和其他数据项。姓名为关键字，索引表中为每组的第一个记录（不是每个记录）的关键字值，用指计指向主文件中该记录的起始位置。索引表只包含关键字和指计两个数据项，所有姓名关键字递增排列。主文件中记录分组排列，同一个组中关键字可以无序，但组与组之间关键字必须有序。查找一个记录时，通过索引表找到其所在的组，然后在该组中使用顺序查找就能很快地找到记录。<br><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1155P2G9.jpg" alt="img"></p>
+<center>索引顺序文件示意图</center>
+
+<p>对于含有N个记录的顺序文件，查找某关键字值的记录时平均需要查找N&#x2F;2次。在索引顺序文件中，假设N个记录分为N1&#x2F;2组，索引表中有N1&#x2F;2个表项，每组有N1&#x2F;2个记录，在查找某关键字值的记录时，先顺序查找索引表，需要查找N1&#x2F;2&#x2F;2次，然后再在主文件中对应的组中顺序查找，也需要查找N1&#x2F;2&#x2F;2次，这样总共查找N1&#x2F;2&#x2F;2+N1&#x2F;2&#x2F;2&#x3D;N1&#x2F;2次。显然，索引顺序文件提高了查找效率，如果记录数很多，可以釆用两级或多级索引。</p>
+<p>索引文件和索引顺序文件都提高了存取的速度，但因为配置索引表而增加了存储空间。</p>
+<h3 id="直接文件或散列文件-Hash-File"><a href="#直接文件或散列文件-Hash-File" class="headerlink" title="直接文件或散列文件(Hash File)"></a>直接文件或散列文件(Hash File)</h3><p>给定记录的键值或通过Hash函数转换的键值直接决定记录的物理地址。这种映射结构不同于顺序文件或索引文件，没有顺序的特性。</p>
+<p>散列文件有很高的存取速度，但是会引起冲突，即不同关键字的散列函数值相同。</p>
+<h1 id="文件目录结构：单级、两级、多级-树形-和无环图目录结构"><a href="#文件目录结构：单级、两级、多级-树形-和无环图目录结构" class="headerlink" title="文件目录结构：单级、两级、多级(树形)和无环图目录结构"></a>文件目录结构：单级、两级、多级(树形)和无环图目录结构</h1><p>与文件管理系统和文件集合相关联的是文件目录，它包含有关文件的信息，包括属性、 位置和所有权等，这些信息主要是由操作系统进行管理。首先我们来看目录管理的基本要求: 从用户的角度看，目录在用户（应用程序）所需要的文件名和文件之间提供一种映射，所以*<strong>目录管理要实现“按名存取”*<strong>；目录存取的效率直接影响到系统的性能，所以要</strong>*提高对目录的检索速度**<em>；在共享系统中，目录还需要提供用于控制访问文件的信息。此外，文件允许重名也是用户的合理和必然要求，</em></strong>目录管理通过树形结构来解决和实现***。</p>
+<h2 id="文件控制块和索引结点"><a href="#文件控制块和索引结点" class="headerlink" title="文件控制块和索引结点"></a>文件控制块和索引结点</h2><p>同进程管理一样，为实现目录管理，操作系统中引入了文件控制块的数据结构。</p>
+<ol>
+<li>文件控制块。<br>文件控制块(FCB)是用来存放控制文件需要的各种信息的数据结构，以实现“按名存取”。<em><strong>FCB的有序集合称为文件目录，一个FCB就是一个文件目录项。为了创建一个新文件，系统将分配一个FCB并存放在文件目录中，成为目录项。</strong></em></li>
+</ol>
+<p>FCB主要包含以下信息：</p>
+<ul>
+<li>基本信息，如文件名、文件的物理位置、文件的逻辑结构、文件的物理结构等。</li>
+<li>存取控制信息，如文件存取权限等。</li>
+<li>使用信息，如文件建立时间、修改时间等。</li>
+</ul>
+<ol>
+<li>索引结点。<br>在检索目录文件的过程中，只用到了文件名，仅当找到一个目录项（查找文件名与目录项中文件名匹配）时，才需要从该目录项中读出该文件的物理地址。也就是说，在检索目录时，文件的其他描述信息不会用到，也不需调入内存。因此，有的系统（如UNIX，见表4-1）釆用了文件名和文件描述信息分开的方法，文件描述信息单独形成一个称为索引结点的数据结构，简称为 i 结点。在文件目录中的每个目录项仅由文件名和指向该文件所对应的i结点的指针构成。<br><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/152015.png" alt="img"><center>UNIX的文件目录结构</center></li>
+</ol>
+<p>一个FCB的大小是64字节，盘块大小是1KB，则在每个盘块中可以存放16个FCB（注意，<strong>FCB必须连续存放</strong>）。而在UNIX系统中一个目录项仅占16字节，其中14字节是文件名，2字节是 i 结点指针。在1KB的盘块中可存放64个目录项。这样，可使查找文件时平均启动磁盘次数减少到原来的1&#x2F;4，大大节省了系统开销。</p>
+<p>存放在磁盘上的索引结点称为磁盘索引结点，UNIX中的每个文件都有一个唯一的磁盘索引结点，主要包括以下几个方面：</p>
+<ul>
+<li>文件主标识符，拥有该文件的个人或小组的标识符。</li>
+<li>文件类型，包括普通文件、目录文件或特别文件。</li>
+<li>文件存取权限，各类用户对该文件的存取权限。</li>
+<li>文件物理地址，每个索引结点中含有13个地址项，即 iaddr(0) ~ iaddr(12)，它们以直接或间接方式给出数据文件所在盘块的编号。</li>
+<li>文件长度，以字节为单位。</li>
+<li>文件链接计数，在本文件系统中所有指向该文件的文件名的指针计数。</li>
+<li>文件存取时间，本文件最近被进程存取的时间、最近被修改的时间以及索引结点最‘ 近被修改的时间。</li>
+<li>文件被打开时，磁盘索引结点复制到内存的索引结点中，以便于使用。在内存索引结点中又增加了以下内容：</li>
+<li>索引结点编号，用于标识内存索引结点。</li>
+<li>状态，指示i结点是否上锁或被修改。</li>
+<li>访问计数，每当有一进程要访问此i结点时，计数加1，访问结束减1。</li>
+<li>逻辑设备号，文件所属文件系统的逻辑设备号。</li>
+<li>链接指针，设置分别指向空闲链表和散列队列的指针。</li>
+</ul>
+<h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><p>在理解一个文件系统的需求前，我们首先来考虑<strong>在目录这个层次上所需要执行的操作</strong>，这有助于后面文件系统的整体理解。</p>
+<ul>
+<li>搜索：当用户使用一个文件时，需要搜索目录，以找到该文件的对应目录项。</li>
+<li>创建文件：当创建一个新文件时，需要在目录中增加一个目录项。</li>
+<li>删除文件：当删除一个文件时，需要在目录中删除相应的目录项。</li>
+<li>显示目录：用户可以请求显示目录的内容，如显示该用户目录中的所有文件及属性。</li>
+<li>修改目录：某些文件属性保存在目录中，因而这些属性的变化需要改变相应的目录项。</li>
+</ul>
+<p>操作时，考虑以下几种目录结构：</p>
+<h3 id="单级目录结构。"><a href="#单级目录结构。" class="headerlink" title="单级目录结构。"></a>单级目录结构。</h3><p>在整个文件系统中只建立一张目录表，每个文件占一个目录项，如下图所示。</p>
+<p><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F116245W96.jpg" alt="img"></p>
+<center>单级目录结构</center>
+
+<p>当访问一个文件时，先按文件名在该目录中查找到相应的FCB，经合法性检查后执行相应的操作。当建立一个新文件时，必须先检索所有目录项以确保没有“重名”的情况，然后在该目录中增设一项，把FCB的全部信息保存在该项中。当删除一个文件时，先从该目录中找到该文件的目录项，回收该文件所占用的存储空间，然后再清除该目录项。</p>
+<p><em><strong>单级目录结构实现了 “按名存取”</strong></em>，但是存在查找速度慢、文件不允许重名、不便于文件共享等缺点，而且对于多用户的操作系统显然是不适用的。</p>
+<h3 id="两级目录结构。"><a href="#两级目录结构。" class="headerlink" title="两级目录结构。"></a>两级目录结构。</h3><p>单级目录很容易造成文件名称的混淆，可以考虑釆用两级方案，将文件目录分成***主文件目录(Master File Directory, MFD)<em><strong>和</strong></em>用户文件目录（User File Directory, UFD)***两级，如下图所示。<br><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1162SXT.jpg" alt="img"></p>
+<center>两级目录结构</center>
+
+<p>主文件目录项记录用户名及相应用户文件目录所在的存储位置。用户文件目录项记录该用户文件的FCB信息。当某用户欲对其文件进行访问时，只需搜索该用户对应的UFD，这既解决了不同用户文件的“重名”问题，也在一定程度上保证了文件的安全。</p>
+<p>两级目录结构可以解决多用户之间的文件重名问题，文件系统可以在目录上实现访问限制。但是两级目录结构缺乏灵活性，不能对文件分类。</p>
+<h3 id="多级目录结构（树形目录结构-。"><a href="#多级目录结构（树形目录结构-。" class="headerlink" title="多级目录结构（树形目录结构)。"></a>多级目录结构（树形目录结构)。</h3><p>将两级目录结构的层次关系加以推广，就形成了多级目录结构，即树形目录结构，如下图所示。</p>
+<p>用户要访问某个文件时用文件的路径名标识文件，文件路径名是个字符串，由从根目录出发到所找文件的通路上的所有目录名与数据文件名用分隔符链接起来而成。从根目录出发的路径称绝对路径。当层次较多时，每次从根目录查询浪费时间，于是加入了当前目录，进程对各文件的访问都是相对于当前目录进行的。当用户要访问某个文件时，使用相对路径标识文件，相对路径由从当前目录出发到所找文件通路上所有目录名与数据文件名用分隔符“&#x2F;”链接而成。<br><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1163124E6.jpg" alt="img"></p>
+<center>树形目录结构</center>
+
+<p>上图是Linux操作系统的目录结构，“&#x2F;dev&#x2F;hda”就是一个绝对路径。若当前目录为 “&#x2F;bin”，则“.&#x2F;ls”就是一个相对路径，其中符号表示当前工作目录。</p>
+<p>通常，每个用户都有各自的“当前目录”,登录后自动进入该用户的“当前目录”。操作系统提供一条专门的系统调用，供用户随时改变“当前目录”。例如，UNIX系统中， “&#x2F;etc&#x2F;passwd”文件就包含有用户登录时默认的“当前目录”，可用cd命令改变“当前目录”。</p>
+<p><em><strong>树形目录结构可以很方便地对文件进行分类，层次结构清晰，也能够更有效地进行文件的管理和保护。但是，在树形目录中查找一个文件，需要按路径名逐级访问中间结点，这就增加了磁盘访问次数，无疑将影响查询速度。</strong></em></p>
+<h3 id="无环图目录结构。"><a href="#无环图目录结构。" class="headerlink" title="无环图目录结构。"></a>无环图目录结构。</h3><p>树形目录结构可便于实现文件分类，但不便于实现文件共享，为此在树形目录结构的基础上增加了一些指向同一结点的有向边，使整个目录成为一个有向无环图。引入无环图目录结构是为了实现文件共享，如下图所示。</p>
+<p>当某用户要求删除一个共享结点时，若系统只是简单地将它删除，当另一共享用户需要访问时，却无法找到这个文件而发生错误。为此可以为每个共享结点设置一个共享计数器，每当图中增加对该结点的共享链时，计数器加 1;每当某用户提出删除该结点时，计数器减1。仅当共享计数器为0时，才真正删除该结点，否则仅删除请求用户的共享链。<br><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F11634005Q.jpg" alt="img"></p>
+<center>图形目录结构</center>
+
+<p>共享文件（或目录）不同于文件拷贝（副本）。如果有两个文件拷贝，每个程序员看到的是拷贝而不是原件；但如果一个文件被修改，那么另一个程序员的拷贝不会有改变。对于共享文件，只存在一个真正文件，任何改变都会为其他用户所见。</p>
+<p>无环图目录结构方便实现了文件的共享,但使得系统的管理变得更加复杂。</p>
+<h1 id="共享文件：硬链接和软链接"><a href="#共享文件：硬链接和软链接" class="headerlink" title="共享文件：硬链接和软链接"></a>共享文件：硬链接和软链接</h1><p>文件共享使多个用户（进程）共享同一份文件，<em><strong>系统中只需保留该文件的一份副本</strong></em>。如果系统不能提供共享功能，那么每个需要该文件的用户都要有各自的副本，会造成对存储空间的极大浪费。随着计算机技术的发展，文件共享的范围已由单机系统发展到多机系统，进而通过网络扩展到全球。这些文件的分享是通过分布式文件系统、远程文件系统、分布式信息系统实现的。这些系统允许多个客户通过C&#x2F;S模型共享网络中的服务器文件。</p>
+<p>现代常用的两种文件共享方法有：</p>
+<h2 id="基于索引结点的共享方式（硬链接）"><a href="#基于索引结点的共享方式（硬链接）" class="headerlink" title="基于索引结点的共享方式（硬链接）"></a>基于索引结点的共享方式（硬链接）</h2><p>在树形结构的目录中，当有两个或多个用户要共享一个子目录或文件时，必须将共享文件或子目录链接到两个或多个用户的目录中，才能方便地找到该文件，如下图所示。</p>
+<p><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F11H004348.jpg" alt="img"></p>
+<center>基于索引结点的共享方式</center>
+
+<p>在这种共享方式中引用索引结点，即诸如文件的物理地址及其他的文件属性等信息，不再是放在目录项中，而是放在索引结点中。在文件目录中只设置文件名及指向相应索引结点的指针。在索引结点中还应有一个链接计数count,用于表示链接到本索引结点（亦即文件） 上的用户目录项的数目。当count&#x3D;2时，表示有两个用户目录项链接到本文件上，或者说是有两个用户共享此文件。</p>
+<p>当用户A创建一个新文件时，它便是该文件的所有者，此时将count置为1。当有用户 B要共享此文件时，在用户B的目录中增加一个目录项，并设置一指针指向该文件的索引结点。此时，文件主仍然是用户A，count&#x3D;2。如果用户A不再需要此文件，不能将文件直接删除。因为，若删除了该文件，也必然删除了该文件的索引结点，这样便会便用户B的指针悬空，而用户B则可能正在此文件上执行写操作，此时用户B会无法访问到文件。因此用户A不能删除此文件，只是将该文件的count减1，然后删除自己目录中的相应目录项。用户B仍可以使用该文件。当COunt&#x3D;0时，表示没有用户使用该文件，系统将负责删除该文件。如图4-8给出了用户B链接到文件上的前、后情况。</p>
+<h2 id="利用符号链实现文件共享（软链接）"><a href="#利用符号链实现文件共享（软链接）" class="headerlink" title="利用符号链实现文件共享（软链接）"></a>利用符号链实现文件共享（软链接）</h2><p>为使用户B能共享用户A的一个文件F,可以由系统创建一个LINK类型的新文件，也取名为F，并将文件F写入用户B的目录中，以实现用户B的目录与文件F的链接。在新文件中只包含被链接文件F的路径名。这样的链接方法被称为符号链接。</p>
+<p><img src="/2019/06/12/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3/1-140F1155P2G9.jpg" alt="img"></p>
+<center>文件共享中的链接计数</center>
+
+<p>新文件中的路径名则只被看做是符号链，当用户B要访问被链接的文件F且正要读 LINK类新文件时，操作系统根据新文件中的路径名去读该文件，从而实现了用户B对文件 F的共享。</p>
+<p>在利用符号链方式实现文件共享时，只有文件的拥有者才拥有指向其索引结点的指针。而共享该文件的其他用户则只有该文件的路径名，并不拥有指向其索引结点的指针。这样，也就不会发生在文件主删除一共享文件后留下一悬空指针的情况。当文件的拥有者把一个共享文件删除后，其他用户通过符号链去访问它时，会出现访问失败，于是将符号链删除，此时不会产生任何影响。当然，利用符号链实现文件共享仍然存在问题，例如：一个文件釆用符号链方式共享，当文件拥有者将其删除，而在共享的其他用户使用其符号链接访问该文件之前，又有人在同一路径下创建了另一个具有同样名称的文件，则该符号链将仍然有效，但访问的文件已经改变，从而导致错误。</p>
+<p>在符号链的共享方式中，当其他用户读共享文件时，需要根据文件路径名逐个地查找目录，直至找到该文件的索引结点。因此，每次访问时，都可能要多次地读盘，使得访问文件的开销变大并增加了启动磁盘的频率。此外，符号链的索引结点也要耗费一定的磁盘空间。符号链方式有一个很大的优点，即网络共享只需提供该文件所在机器的网络地址以及该机器中的文件路径即可。</p>
+<p>上述两种链接方式都存在一个共同的问题，即每个共享文件都有几个文件名。换言之，每增加一条链接，就增加一个文件名。这实质上就是每个用户都使用自己的路径名去访问共享文件。当我们试图去遍历整个文件系统时，将会多次遍历到该共享文件。</p>
+<p>硬链接和软链接都是文件系统中的静态共享方法，在文件系统中还存在着另外的共享需求，即两个进程同时对同一个文件进行操作，这样的共享可以称为动态共享。</p>
+<h1 id="文件保护：文件访问类型和访问控制"><a href="#文件保护：文件访问类型和访问控制" class="headerlink" title="文件保护：文件访问类型和访问控制"></a>文件保护：文件访问类型和访问控制</h1><p>为了防止文件共享可能会导致文件被破坏或未经核准的用户修改文件，文件系统必须控制用户对文件的存取，即解决对文件的读、写、执行的许可问题。为此，必须在文件系统中建立相应的文件保护机制。</p>
+<p>文件保护通过<em><strong>口令保护、加密保护和访问控制</strong></em>等方式实现。其中，口令保护和加密保护是为了防止用户文件被他人存取或窃取，而访问控制则用于控制用户对文件的访问方式。</p>
+<h2 id="访问类型"><a href="#访问类型" class="headerlink" title="访问类型"></a>访问类型</h2><p>对文件的保护可以从限制对文件的访问类型中出发。可加以控制的访问类型主要有以下几种：</p>
+<ul>
+<li>读：从文件中读。</li>
+<li>写：向文件中写。</li>
+<li>执行：将文件装入内存并执行。</li>
+<li>添加：将新信息添加到文件结尾部分。</li>
+<li>删除：删除文件，释放空间。</li>
+<li>列表清单：列出文件名和文件属性。</li>
+</ul>
+<p>此外还可以对文件的重命名、复制、编辑等加以控制。这些高层的功能可以通过系统程序调用低层系统调用来实现。保护可以只在低层提供。例如，复制文件可利用一系列的读请求来完成。这样，具有读访问用户同时也具有复制和打印的权限了。</p>
+<h2 id="访问控制"><a href="#访问控制" class="headerlink" title="访问控制"></a>访问控制</h2><p>解决访问控制最常用的方法是根据用户身份进行控制。而实现基于身份访问的最为普通的方法是<em><strong>为每个文件和目录增加一个访问控制列表(Access-Control List, ACL)，以规定每个用户名及其所允许的访问类型。</strong></em></p>
+<p>这种方法的优点是可以使用复杂的访问方法。其缺点是长度无法预期并且可能导致复杂的空间管理，使用精简的访问列表可以解决这个问题。</p>
+<p>精简的访问列表釆用拥有者、组和其他三种用户类型。</p>
+<ul>
+<li>拥有者：创建文件的用户。</li>
+<li>组：一组需要共享文件且具有类似访问的用户。</li>
+<li>其他：系统内的所有其他用户。</li>
+</ul>
+<p>这样只需用三个域列出访问表中这三类用户的访问权限即可。文件拥有者在创建文件时，说明创建者用户名及所在的组名，系统在创建文件时也将文件主的名字、所属组名列在该文件的FCB中。用户访问该文件时，按照拥有者所拥有的权限访问文件，如果用户和拥有者在同一个用户组则按照同组权限访问，否则只能按其他用户权限访问。UNIX操作系统即釆用此种方法。</p>
+<p>口令和密码是另外两种访问控制方法。</p>
+<p><em><strong>口令指用户在建立一个文件时提供一个口令，系统为其建立FCB时附上相应口令，同时告诉允许共享该文件的其他用户。用户请求访问时必须提供相应口令。</strong></em>这种方法时间和空间的开销不多，缺点是口令直接存在系统内部，不够安全。</p>
+<p><em><strong>密码指用户对文件进行加密，文件被访问时需要使用密钥。</strong></em>这种方法保密性强，节省了存储空间，不过编码和译码要花费一定时间。</p>
+<p>口令和密码都是防止用户文件被他人存取或窃取，并没有控制用户对文件的访问类型。</p>
+<p>注意两个问题：</p>
+<ul>
+<li>现代操作系统常用的文件保护方法，是将访问控制列表与用户、组和其他成员访问控制方案一起组合使用。</li>
+<li>对于多级目录结构而言，不仅需要保护单个文件，而且还需要保护子目录内的文件, 即需要提供目录保护机制。目录操作与文件操作并不相同，因此需要不同的保护机制。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Keep me coding</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Zhao Zhejian 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Zhao Zhejian 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/06/11/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E6%A6%82%E5%BF%B5/" rel="prev" title="数据库系统概念">
+                  <i class="fa fa-chevron-left"></i> 数据库系统概念
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/06/15/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0/" rel="next" title="文件系统实现">
+                  文件系统实现 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhao Zhejian</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"cosmogram/cosmogram.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

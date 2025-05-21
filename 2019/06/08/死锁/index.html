@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cosmogram.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="死锁的定义在多道程序系统中，由于多个进程的并发执行，改善了系统资源的利用率并提高了系统的处理能力。然而，多个进程的并发执行也带来了新的问题——死锁。所谓死锁是指多个进程因竞争资源而造成的一种僵局（互相等待），若无外力作用，这些进程都将无法向前推进。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="死锁">
+<meta property="og:url" content="https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/index.html">
+<meta property="og:site_name" content="CosmoGram">
+<meta property="og:description" content="死锁的定义在多道程序系统中，由于多个进程的并发执行，改善了系统资源的利用率并提高了系统的处理能力。然而，多个进程的并发执行也带来了新的问题——死锁。所谓死锁是指多个进程因竞争资源而造成的一种僵局（互相等待），若无外力作用，这些进程都将无法向前推进。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/20180508204335770.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/20180731103816331.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/20180731103850412.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/20180731103912949.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/160105.png">
+<meta property="article:published_time" content="2019-06-08T06:36:23.000Z">
+<meta property="article:author" content="Zhao Zhejian">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/20180508204335770.png">
+
+
+<link rel="canonical" href="https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/","path":"2019/06/08/死锁/","title":"死锁"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>死锁 | CosmoGram</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CosmoGram</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZZJ's Blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">死锁的定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%A7%E7%94%9F%E6%AD%BB%E9%94%81%E7%9A%84%E5%9B%9B%E5%A4%A7%E5%BF%85%E8%A6%81%E6%9D%A1%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">产生死锁的四大必要条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%AD%BB%E9%94%81%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">解决死锁的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%B2%E6%AD%A2%E6%AD%BB%E9%94%81%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">防止死锁的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A0%B4%E5%9D%8F%E4%BA%92%E6%96%A5%E6%9D%A1%E4%BB%B6"><span class="nav-number">4.1.</span> <span class="nav-text">破坏互斥条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A0%B4%E5%9D%8F%E8%AF%B7%E6%B1%82%E5%B9%B6%E4%BF%9D%E6%8C%81%E6%9D%A1%E4%BB%B6"><span class="nav-number">4.2.</span> <span class="nav-text">破坏请求并保持条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A0%B4%E5%9D%8F%E4%B8%8D%E5%8F%AF%E5%89%A5%E5%A4%BA%E6%9D%A1%E4%BB%B6"><span class="nav-number">4.3.</span> <span class="nav-text">破坏不可剥夺条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A0%B4%E5%9D%8F%E5%BE%AA%E7%8E%AF%E7%AD%89%E5%BE%85%E6%9D%A1%E4%BB%B6"><span class="nav-number">4.4.</span> <span class="nav-text">破坏循环等待条件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E6%AD%BB%E9%94%81%E7%9A%84%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">避免死锁的算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E2%80%9C%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8%E7%8A%B6%E6%80%81%E2%80%9D%E6%B3%95"><span class="nav-number">5.1.</span> <span class="nav-text">判断“系统安全状态”法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%B6%E8%A1%8C%E5%AE%B6%E7%AE%97%E6%B3%95"><span class="nav-number">5.2.</span> <span class="nav-text">银行家算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D"><span class="nav-number">5.2.1.</span> <span class="nav-text">一句话</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E5%BC%A0%E5%9B%BE"><span class="nav-number">5.2.2.</span> <span class="nav-text">一张图</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E7%9A%84%E6%A3%80%E6%B5%8B"><span class="nav-number">6.</span> <span class="nav-text">死锁的检测</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%BB%E5%87%BA%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D%E5%9B%BE"><span class="nav-number">6.1.</span> <span class="nav-text">画出资源分配图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8C%96%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D%E5%9B%BE"><span class="nav-number">6.2.</span> <span class="nav-text">简化资源分配图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%AD%BB%E9%94%81%E5%AE%9A%E7%90%86%E5%88%A4%E6%96%AD"><span class="nav-number">6.3.</span> <span class="nav-text">使用死锁定理判断</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E7%9A%84%E8%A7%A3%E9%99%A4"><span class="nav-number">7.</span> <span class="nav-text">死锁的解除</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zhao Zhejian"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Zhao Zhejian</p>
+  <div class="site-description" itemprop="description">愚者困惑，智者提问</div>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cosmogram" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/zhaozhejian@mail.ustc.edu.cn" title="E-Mail → zhaozhejian@mail.ustc.edu.cn"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/291014857" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;291014857" rel="noopener" target="_blank"><i class="fa custom bilibili fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/CosmogramZhao" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/zhaozhejian" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;zhaozhejian" rel="noopener" target="_blank"><i class="fab fa-facebook fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/CosmogramZhao" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/id/cosmogram" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;id&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-steam fa-fw"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://zzj960.github.io/" title="https:&#x2F;&#x2F;zzj960.github.io&#x2F;" rel="noopener" target="_blank">My first blog (abandoned)</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cosmogram.github.io/2019/06/08/%E6%AD%BB%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhao Zhejian">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CosmoGram">
+      <meta itemprop="description" content="愚者困惑，智者提问">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="死锁 | CosmoGram">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          死锁
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-06-08 14:36:23" itemprop="dateCreated datePublished" datetime="2019-06-08T14:36:23+08:00">2019-06-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">进程管理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="死锁的定义"><a href="#死锁的定义" class="headerlink" title="死锁的定义"></a>死锁的定义</h1><p><em><strong>在多道程序系统中，由于多个进程的并发执行，改善了系统资源的利用率并提高了系统的处理能力。然而，多个进程的并发执行也带来了新的问题——死锁。</strong></em>所谓死锁是指多个进程因竞争资源而造成的一种僵局（互相等待），若无外力作用，这些进程都将无法向前推进。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>先看生活中的一个实例，在一条河上有一座桥，桥面很窄，只能容纳一辆汽车通行。如果有两辆汽车分别从桥的左右两端驶上该桥，则会出现下述的冲突情况。此时，左边的汽车占有了桥面左边的一段，要想过桥还需等待右边的汽车让出桥面右边的一段；右边的汽车占有了桥面右边的一段，要想过桥还需等待左边的汽车让出桥面左边的一段。此时，若左右两边的汽车都只能向前行驶，则两辆汽车都无法过桥。<br>在计算机系统中也存在类似的情况。例如，某计算机系统中只有一台打印机和一台输入设备，进程P1正占用输入设备，同时又提出使用打印机的请求，但此时打印机正被进程P2 所占用，而P2在未释放打印机之前，又提出请求使用正被P1占用着的输入设备。这样两个进程相互无休止地等待下去，均无法继续执行，此时两个进程陷入死锁状态。</p>
+</blockquote>
+<h1 id="产生死锁的四大必要条件"><a href="#产生死锁的四大必要条件" class="headerlink" title="产生死锁的四大必要条件"></a>产生死锁的四大必要条件</h1><p><strong>①资源互斥&#x2F;资源不共享</strong><br>每个资源要么已经分配给了一个进程，要么是可用的，只有这两种状态，资源不可以被共享使用，所以所谓的互斥是指：资源不共享，如果被使用，只能被一个进程使用。</p>
+<p><strong>②占有和等待&#x2F;请求并保持</strong><br>已经得到资源的进程还能继续请求新的资源，所以个人觉得叫占有并请求也许更好理解。</p>
+<p><strong>③资源不可剥夺</strong><br>当一个资源分配给了一个进程后，其它需要该资源的进程不能强制性获得该资源，除非该资源的当前占有者显示地释放该资源。</p>
+<p><strong>④环路等待</strong><br>死锁发生时，系统中一定有由两个或两个以上的进程组成的一条环路，环路上的每个进程都在等待下一个进程所占有的资源。</p>
+<h1 id="解决死锁的方法"><a href="#解决死锁的方法" class="headerlink" title="解决死锁的方法"></a>解决死锁的方法</h1><ul>
+<li>预防死锁（破坏产生死锁的条件）</li>
+<li>避免死锁（银行家算法）</li>
+<li>检测死锁（资源分配图）</li>
+<li>解除死锁</li>
+</ul>
+<blockquote>
+<p>第三条与第四条一般联合使用</p>
+</blockquote>
+<h1 id="防止死锁的方法"><a href="#防止死锁的方法" class="headerlink" title="防止死锁的方法"></a>防止死锁的方法</h1><blockquote>
+<p>①防止死锁的发生只需破坏死锁产生的四个必要条件之一即可。<br>②下面的方法开销非常之大，目前没有一个操作系统可以实现。<br><em><strong>③因此，目前使用的方法是避免死锁，而不是防止死锁。</strong></em><br>④这部分的内容大致浏览简单了解一遍即可，只要能在某些选择题中判断出选项对应的是下面四个方法中的哪个就可以了。</p>
+</blockquote>
+<h2 id="破坏互斥条件"><a href="#破坏互斥条件" class="headerlink" title="破坏互斥条件"></a>破坏互斥条件</h2><p><em>方法</em>：如果允许系统资源都能共享使用，则系统不会进入死锁状态。<br><em>缺点</em>：有些资源根本不能同时访问，如打印机等临界资源只能互斥使用。所以，破坏互斥条件而预防死锁的方法不太可行，而且在有的场合应该保护这种互斥性。</p>
+<h2 id="破坏请求并保持条件"><a href="#破坏请求并保持条件" class="headerlink" title="破坏请求并保持条件"></a>破坏请求并保持条件</h2><p><em>方法</em>：釆用预先静态分配方法，即进程在运行前一次申请完它所需要的全部资源，在它的资源未满足前，不把它投入运行。一旦投入运行后，这些资源就一直归它所有，也不再提出其他资源请求，这样就可以保证系统不会发生死锁。<br><em>缺点</em>：系统资源被严重浪费，其中有些资源可能仅在运行初期或运行快结束时才使用，甚至根本不使用。而且还会导致“饥饿”现象，当由于个别资源长期被其他进程占用时，将致使等待该资源的进程迟迟不能开始运行。</p>
+<h2 id="破坏不可剥夺条件"><a href="#破坏不可剥夺条件" class="headerlink" title="破坏不可剥夺条件"></a>破坏不可剥夺条件</h2><p><em>方法</em>：当一个已保持了某些不可剥夺资源的进程，请求新的资源而得不到满足时，它必须释放已经保持的所有资源，待以后需要时再重新申请。这意味着，一个进程已占有的资源会被暂时释放，或者说是被剥夺了，或从而破坏了不可剥夺条件。<br><em>缺点</em>：该策略实现起来比较复杂，释放已获得的资源可能造成前一阶段工作的失效，反复地申请和释放资源会增加系统开销，降低系统吞吐量。这种方法常用于状态易于保存和恢复的资源，如CPU的寄存器及内存资源，一般不能用于打印机之类的资源。</p>
+<h2 id="破坏循环等待条件"><a href="#破坏循环等待条件" class="headerlink" title="破坏循环等待条件"></a>破坏循环等待条件</h2><p><em>方法</em>：为了破坏循环等待条件，可釆用顺序资源分配法。首先给系统中的资源编号，规定每个进程，必须按编号递增的顺序请求资源，同类资源一次申请完。也就是说，只要进程提出申请分配资源Ri，则该进程在以后的资源申请中，只能申请编号大于Ri的资源。<br><em>缺点</em>：这种方法存在的问题是，编号必须相对稳定，这就限制了新类型设备的增加；尽管在为资源编号时已考虑到大多数作业实际使用这些资源的顺序，但也经常会发生作业使用资源的顺序与系统规定顺序不同的情况，造成资源的浪费；此外，这种按规定次序申请资源的方法，也必然会给用户的编程带来麻烦。</p>
+<h1 id="避免死锁的算法"><a href="#避免死锁的算法" class="headerlink" title="避免死锁的算法"></a>避免死锁的算法</h1><h2 id="判断“系统安全状态”法"><a href="#判断“系统安全状态”法" class="headerlink" title="判断“系统安全状态”法"></a>判断“系统安全状态”法</h2><p>在进行系统资源分配之前，先计算此次资源分配的安全性。若此次分配不会导致系统进入不安全状态，则将资源分配给进程； 否则，让进程等待。</p>
+<h2 id="银行家算法"><a href="#银行家算法" class="headerlink" title="银行家算法"></a>银行家算法</h2><p>1、申请的贷款额度不能超过银行现有的资金总额<br>2、分批次向银行提款，但是贷款额度不能超过一开始最大需求量的总额<br>3、暂时不能满足客户申请的资金额度时，在有限时间内给予贷款<br>4、客户要在规定的时间内还款</p>
+<h3 id="一句话"><a href="#一句话" class="headerlink" title="一句话"></a>一句话</h3><p>当一个进程申请使用资源的时候，银行家算法通过先<strong>试探</strong>分配给该进程资源，然后通过安全性算法判断分配后的系统是否处于安全状态，若不安全则试探分配作废，让该进程继续等待。</p>
+<h3 id="一张图"><a href="#一张图" class="headerlink" title="一张图"></a>一张图</h3><p><img src="/2019/06/08/%E6%AD%BB%E9%94%81/20180508204335770.png" alt="img"></p>
+<ul>
+<li>首先是银行家算法中的<strong>进程</strong>： 包含进程Pi的需求资源数量（也是最大需求资源数量，MAX）<br>已分配给该进程的资源A（Allocation）<br>还需要的资源数量N（Need&#x3D;M-A）</li>
+<li>Available为空闲资源数量，即资源池（注意：资源池的剩余资源数量+已分配给所有进程的资源数量&#x3D;系统中的资源总量）</li>
+</ul>
+<p>假设资源P1申请资源，银行家算法先<strong>试探</strong>的分配给它（当然先要看看当前资源池中的资源数量够不够），若申请的资源数量小于等于Available，然后接着判断分配给P1后剩余的资源，能不能使进程队列的某个进程执行完毕，若没有进程可执行完毕，则系统处于不安全状态（即此时没有一个进程能够完成并释放资源，随时间推移，系统终将处于死锁状态）。</p>
+<p>若有进程可执行完毕，则假设回收已分配给它的资源（剩余资源数量增加），把这个进程标记为可完成，并继续判断队列中的其它进程，<strong>若所有进程都可执行完毕，则系统处于安全状态，并根据可完成进程的分配顺序生成安全序列</strong>（如{P0，P3，P2，P1}表示将申请后的剩余资源Work先分配给P0–&gt;回收（Work+已分配给P0的A0&#x3D;Work）–&gt;分配给P3–&gt;回收（Work+A3&#x3D;Work）–&gt;分配给P2–&gt;······满足所有进程）。</p>
+<p>如此就可避免系统存在潜在死锁的风险。</p>
+<h1 id="死锁的检测"><a href="#死锁的检测" class="headerlink" title="死锁的检测"></a>死锁的检测</h1><blockquote>
+<p>该部分讲述如何判断是否产生死锁</p>
+</blockquote>
+<h2 id="画出资源分配图"><a href="#画出资源分配图" class="headerlink" title="画出资源分配图"></a>画出资源分配图</h2><p>系统死锁，可利用资源分配图来描述。如下图所示，用长方形代表一个进程，用框代表一类资源。由于一种类型的资源可能有多个，用框中的一个点代表一类资源中的一个资源。从进程到资源的有向边叫请求边，表示该进程申请一个单位的该类资源；从资源到进程的边叫分配边，表示该类资源已经有一个资源被分配给了该进程。<br><img src="/2019/06/08/%E6%AD%BB%E9%94%81/20180731103816331.png" alt="img"></p>
+<h2 id="简化资源分配图"><a href="#简化资源分配图" class="headerlink" title="简化资源分配图"></a>简化资源分配图</h2><p><strong>第一步：</strong>先看A资源，它有三个箭头是向外的，因此它一共给进程分配了3个资源，此时，A没有空闲的资源剩余。<br><strong>第二步：</strong>再看B资源，它有一个箭头是向外的，因此它一共给进程分配了1个资源，此时，B还剩余一个空闲的资源没分配。<br><strong>第三步：</strong>看完资源，再来看进程，先看进程P2，它只申请一个A资源，但此时A资源已经用光了，所以，进程P2进入阻塞状态，因此，进程P2暂时不能化成孤立的点。<br><strong>第四步：</strong>再看进程P1，它只申请一个B资源，此时，系统还剩余一个B资源没分配，因此，可以满足P1的申请。这样，进程P1便得到了它的全部所需资源，所以它不会进入阻塞状态，可以一直运行，等它运行完后，我们再把它的所有的资源释放。相当于：可以把P1的所有的边去掉，变成一个孤立的点，如下图所示：<br><img src="/2019/06/08/%E6%AD%BB%E9%94%81/20180731103850412.png" alt="img"></p>
+<p><strong>第五步：</strong>进程P1运行完后，释放其所占有的资源（2个A资源和1个B资源），系统回收这些资源后，空闲的资源便变成2个A资源和1个B资源，由于进程P2一直在申请一个A资源，所以此时，系统能满足它的申请。这样，进程P2便得到了它的全部所需资源，所以它不会进入阻塞状态，可以一直运行，等它运行完后，我们再把它的所有的资源释放。相当于：可以把P2的所有的边都去掉，化成一个孤立的点，变成下图：<br><img src="/2019/06/08/%E6%AD%BB%E9%94%81/20180731103912949.png" alt="img"></p>
+<blockquote>
+<p>若能消去图中所有的边，则称该图是可完全简化的，如上图</p>
+</blockquote>
+<h2 id="使用死锁定理判断"><a href="#使用死锁定理判断" class="headerlink" title="使用死锁定理判断"></a>使用死锁定理判断</h2><p><strong>死锁定理：</strong><br>①如果资源分配图中没有环路，则系统没有死锁；<br>②如果资源分配图中出现了环路，则系统可能有死锁。<br><strong>或者说：</strong><br><strong>当且仅当S状态的资源分配图是不可完全简化的时候，系统状态则是死锁状态</strong></p>
+<h1 id="死锁的解除"><a href="#死锁的解除" class="headerlink" title="死锁的解除"></a>死锁的解除</h1><p>1、资源剥夺法<br>挂起某些死锁进程，并抢占它的资源，将这些资源分配给其他的死锁进程。但应防止被挂起的进程长时间得不到资源，而处于资源匮乏的状态。</p>
+<p>2、撤销进程法<br>强制撤销部分、甚至全部死锁进程并剥夺这些进程的资源。撤销的原则可以按进程优先级和撤销进程代价的高低进行。</p>
+<p>3、进程回退法<br>让一（多）个进程回退到足以回避死锁的地步，进程回退时自愿释放资源而不是被剥夺。要求系统保持进程的历史信息，设置还原点。<br><img src="/2019/06/08/%E6%AD%BB%E9%94%81/160105.png" alt="img"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Keep me coding</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Zhao Zhejian 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Zhao Zhejian 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/06/07/%E8%BF%9B%E7%A8%8B%E5%90%8C%E6%AD%A5/" rel="prev" title="进程同步">
+                  <i class="fa fa-chevron-left"></i> 进程同步
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/06/09/%E4%B8%BB%E5%AD%98%E5%82%A8%E5%99%A8/" rel="next" title="主存储器">
+                  主存储器 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhao Zhejian</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"cosmogram/cosmogram.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

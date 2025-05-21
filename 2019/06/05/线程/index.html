@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cosmogram.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="进程和线程的粗略对比线程，程序执行流的最小执行单位，是行程中的实际运作单位，经常容易和进程这个概念混淆。那么，线程和进程究竟有什么区别呢？首先，进程是一个动态的过程，是一个活动的实体。简单来说，一个应用程序的运行就可以被看做是一个进程，而线程，是运行中的实际的任务执行者。可以说，进程中包含了多个可以同时运行的线程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线程">
+<meta property="og:url" content="https://cosmogram.github.io/2019/06/05/%E7%BA%BF%E7%A8%8B/index.html">
+<meta property="og:site_name" content="CosmoGram">
+<meta property="og:description" content="进程和线程的粗略对比线程，程序执行流的最小执行单位，是行程中的实际运作单位，经常容易和进程这个概念混淆。那么，线程和进程究竟有什么区别呢？首先，进程是一个动态的过程，是一个活动的实体。简单来说，一个应用程序的运行就可以被看做是一个进程，而线程，是运行中的实际的任务执行者。可以说，进程中包含了多个可以同时运行的线程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/05/%E7%BA%BF%E7%A8%8B/20180418230837516.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/05/%E7%BA%BF%E7%A8%8B/20180419002550514">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/05/%E7%BA%BF%E7%A8%8B/2018041900353665">
+<meta property="article:published_time" content="2019-06-05T11:07:50.000Z">
+<meta property="article:author" content="Zhao Zhejian">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cosmogram.github.io/2019/06/05/%E7%BA%BF%E7%A8%8B/20180418230837516.png">
+
+
+<link rel="canonical" href="https://cosmogram.github.io/2019/06/05/%E7%BA%BF%E7%A8%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://cosmogram.github.io/2019/06/05/%E7%BA%BF%E7%A8%8B/","path":"2019/06/05/线程/","title":"线程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>线程 | CosmoGram</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CosmoGram</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZZJ's Blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%B2%97%E7%95%A5%E5%AF%B9%E6%AF%94"><span class="nav-number">1.</span> <span class="nav-text">进程和线程的粗略对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8A%80%E6%9C%AF%E7%9A%84%E5%8A%A8%E6%9C%BA"><span class="nav-number">2.</span> <span class="nav-text">引入多线程技术的动机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%9C%AC%E8%B4%A8%E5%AF%B9%E6%AF%94"><span class="nav-number">3.</span> <span class="nav-text">进程和线程的本质对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%EF%BC%8C%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">4.</span> <span class="nav-text">线程中的基本概念，线程的生命周期</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%92%8C%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="nav-number">5.</span> <span class="nav-text">单线程和多线程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="nav-number">6.</span> <span class="nav-text">线程池</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9A"><span class="nav-number">7.</span> <span class="nav-text">四种常见的线程池：</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zhao Zhejian"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Zhao Zhejian</p>
+  <div class="site-description" itemprop="description">愚者困惑，智者提问</div>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cosmogram" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/zhaozhejian@mail.ustc.edu.cn" title="E-Mail → zhaozhejian@mail.ustc.edu.cn"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/291014857" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;291014857" rel="noopener" target="_blank"><i class="fa custom bilibili fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/CosmogramZhao" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/zhaozhejian" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;zhaozhejian" rel="noopener" target="_blank"><i class="fab fa-facebook fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/CosmogramZhao" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/id/cosmogram" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;id&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-steam fa-fw"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://zzj960.github.io/" title="https:&#x2F;&#x2F;zzj960.github.io&#x2F;" rel="noopener" target="_blank">My first blog (abandoned)</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cosmogram.github.io/2019/06/05/%E7%BA%BF%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhao Zhejian">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CosmoGram">
+      <meta itemprop="description" content="愚者困惑，智者提问">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="线程 | CosmoGram">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          线程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-06-05 19:07:50" itemprop="dateCreated datePublished" datetime="2019-06-05T19:07:50+08:00">2019-06-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">进程管理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="进程和线程的粗略对比"><a href="#进程和线程的粗略对比" class="headerlink" title="进程和线程的粗略对比"></a>进程和线程的粗略对比</h1><p>线程，程序执行流的最小执行单位，是行程中的实际运作单位，经常容易和进程这个概念混淆。那么，线程和进程究竟有什么区别呢？首先，进程是一个动态的过程，是一个活动的实体。简单来说，一个应用程序的运行就可以被看做是一个进程，而线程，是运行中的实际的任务执行者。可以说，进程中包含了多个可以同时运行的线程。</p>
+<span id="more"></span>
+
+<h1 id="引入多线程技术的动机"><a href="#引入多线程技术的动机" class="headerlink" title="引入多线程技术的动机"></a>引入多线程技术的动机</h1><p>在传统的操作系统中，进程是系统进行资源分配的基本单位，按进程为单位分给存放其映象所需要的虚地址空间、执行所需要的主存空间、完成任务需要的其他各类外围设备资源和文件。<em><strong>同时，进程也是处理器调度的基本单位，进程在任一时刻只有一个执行控制流，通常将这种结构的进程称单线程（结构）进程（single threaded process）。</strong></em><br>首先来考察一个文件服务器的例子，当它接受一个文件服务请求后，由于等待磁盘传输而经常被阻塞，假如不阻塞可继续接受新的文件服务请求并进行处理，则文件服务器的性能和效率便可以提高，由于处理这些请求时要共享一个磁盘缓冲区，程序和数据，要在同一个地址空间中操作。这一类应用非常多。</p>
+<blockquote>
+<p>例如，航空售票系统需要处理多个购票和查询请求，这些信息都与同一个数据库相关；而操作系统在同时处理许多用户进程的查询请求时，都要去访问数据库所在的同一个磁盘。</p>
+</blockquote>
+<p>对于上述这类基于同数据区的同时多请求应用，用单线程结构的进程难以达到这一目标，即使能解决问题代价也非常高，需要寻求新概念、提出新机制。随着并行技术、网络技术和软件设计技术的发展，给并发程序设计效率带来了一系列新的问题，主要表现在：</p>
+<ul>
+<li>进程时空的开销大，频繁的进程调度将耗费大量处理器时间，要为每个进程分配存储空间限制了操作系统中进程的总数。</li>
+<li>进程通信的代价大，每次通信均要涉及通信进程之间或通信进程与操作系统之间的信息传递。<br>进程之间的并发性粒度较粗，并发度不高，过多的进程切换和通信延迟使得细粒度的并发得不偿失。</li>
+<li>不适合并行计算和分布并行计算的要求，对于多处理器和分布式的计算环境来说，进程之间大量频繁的通信和切换，会大大降低并行度。</li>
+<li>不适合客户&#x2F;服务器计算的要求。对于 C&#x2F;S 结构来说，那些需要频繁输入输出并同时大量计算的服务器进程（如数据库服务器、事务监督程序）很难体现效率。</li>
+</ul>
+<p>这就迫切要求操作系统改进进程结构，提供新的机制，使得应用能够按照需求在同一进程中设计出<strong>多条控制流，多控制流之间可以并行执行，多控制流切换不需通过进程调度；多控制流之间还可以通过内存区直接通信，降低通信开销</strong>。这就是近年来流行的多线程（结构）进程（multiple threaded process） 。如果说操作系统中引入进程的目的是为了使多个程序能并发执行，以改善资源使用率和提高系统效率，那么，在操作系统中再引入线程，则是为了<strong>减少程序并发执行时所付出的时空开销，使得并发粒度更细、并发性更好</strong>。这里解决问题的基本思路是：把进程的两项功能————<strong>“独立分配资源”与“被调度分派执行”分离开来</strong>，前一项任务仍由进程完成，它作为系统资源分配和保护的独立单位，不需要频繁地切换；后一项任务交给称作线程的实体来完成，它作为系统调度和分派的基本单位，会被频繁地调度和换，在这种指导思想下，产生了线程的概念。</p>
+<h1 id="进程和线程的本质对比"><a href="#进程和线程的本质对比" class="headerlink" title="进程和线程的本质对比"></a>进程和线程的本质对比</h1><p>进程是系统进行资源调度和分配的基本单位；线程是CPU调度的基本单位。</p>
+<blockquote>
+<p>进程 &#x3D; 资源 （包括寄存器值，PCB，内存映射表）+ TCB（栈结构）<br>线程 &#x3D; TCB（栈结构）</p>
+</blockquote>
+<blockquote>
+<p>线程 的资源是共享的<br>进程 间的资源是分隔独立的，内存映射表不同，占用物理内存地址是分隔的</p>
+</blockquote>
+<blockquote>
+<p>线程 的切换只是切换PC，切换了TCB（栈结构）<br>进程 的切换不仅要切换PC，还包括切换资源，即切换内存映射表</p>
+</blockquote>
+<h1 id="线程中的基本概念，线程的生命周期"><a href="#线程中的基本概念，线程的生命周期" class="headerlink" title="线程中的基本概念，线程的生命周期"></a>线程中的基本概念，线程的生命周期</h1><p>线程的生命周期，线程的生命周期可以利用以下的图解来更好的理解：<br><img src="/2019/06/05/%E7%BA%BF%E7%A8%8B/20180418230837516.png" alt="img"></p>
+<p>先是用new Thread()的方法新建一个线程，在线程创建完成之后，线程就进入了就绪（Runnable）状态，此时创建出来的线程进入抢占CPU资源的状态，当线程抢到了CPU的执行权之后，线程就进入了运行状态（Running），当该线程的任务执行完成之后或者是非常态的调用的stop（）方法之后，线程就进入了死亡状态。<br>而我们在图解中可以看出，线程还具有一个阻塞的过程，这是怎么回事呢？当面对以下几种情况的时候，容易造成线程阻塞，第一种，当线程主动调用了sleep（）方法时，线程会进入则阻塞状态，除此之外，当线程中主动调用了阻塞时的IO方法时，这个方法有一个返回参数，当参数返回之前，线程也会进入阻塞状态，还有一种情况，当线程进入正在等待某个通知时，会进入阻塞状态。那么，为什么会有阻塞状态出现呢？我们都知道,CPU的资源是十分宝贵的，所以，当线程正在进行某种不确定时长的任务时，Java就会收回CPU的执行权，从而合理应用CPU的资源。我们根据图可以看出，线程在阻塞过程结束之后，会重新进入就绪状态，重新抢夺CPU资源。这时候，我们可能会产生一个疑问，如何跳出阻塞过程呢?又以上几种可能造成线程阻塞的情况来看，都是存在一个时间限制的，当sleep()方法的睡眠时长过去后，线程就自动跳出了阻塞状态，第二种则是在返回了一个参数之后，在获取到了等待的通知时，就自动跳出了线程的阻塞过程</p>
+<h1 id="单线程和多线程"><a href="#单线程和多线程" class="headerlink" title="单线程和多线程"></a>单线程和多线程</h1><p><strong>单线程</strong>，顾名思义即是只有一条线程在执行任务，这种情况在我们日常的工作学习中很少遇到，所以我们只是简单做一下了解</p>
+<p><strong>多线程</strong>，创建多条线程同时执行任务，这种方式在我们的日常生活中比较常见。但是，在多线程的使用过程中，还有许多需要我们了解的概念。比如，在理解上并行和并发的区别，以及在实际应用的过程中多线程的安全问题，对此，我们需要进行详细的了解。</p>
+<p><strong>并发和并行</strong>：在我们看来，都是可以同时执行多种任务，那么，到底他们二者有什么区别呢？</p>
+<p><strong>并发</strong>，从宏观方面来说，并行就是同时进行多种时间，实际上，这几种时间，并不是同时进行的，而是交替进行的，而由于CPU的运算速度非常的快，会造成我们的一种错觉，就是在同一时间内进行了多种事情</p>
+<p>而<strong>并行</strong>，则是真正意义上的同时进行多种事情。这种只可以在多核CPU的基础下完成。</p>
+<p>还有就是多线程的安全问题？为什么会造成多线程的安全问题呢？我们可以想象一下，如果多个线程同时执行一个任务，name意味着他们共享同一种资源，由于线程CPU的资源不一定可以被谁抢占到，这是，第一条线程先抢占到CPU资源，他刚刚进行了第一次操作，而此时第二条线程抢占到了CPU的资源，name，共享资源还来不及发生变化，就同时有两条数据使用了同一条资源，具体请参考多线程买票问题。这个问题我们应该如何解决那？</p>
+<p>由造成问题的原因我们可以看出，这个问题主要的矛盾在于，CPU的使用权抢占和资源的共享发生了冲突，解决时，我们只需要让一条线程战歌了CPU的资源时，阻止第二条线程同时抢占CPU的执行权，在代码中，我们只需要在方法中使用同步代码块即可。在这里，同步代码块不多进行赘述，可以自行了解。</p>
+<h1 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h1><p>又以上介绍我们可以看出，在一个应用程序中，我们需要多次使用线程，也就意味着，我们需要多次创建并销毁线程。而创建并销毁线程的过程势必会消耗内存。而在Java中，内存资源是及其宝贵的，所以，我们就提出了线程池的概念。</p>
+<p>线程池：Java中开辟出了一种管理线程的概念，这个概念叫做线程池，从概念以及应用场景中，我们可以看出，线程池的好处，就是可以方便的管理线程，也可以减少内存的消耗。</p>
+<p>那么，我们应该如何创建一个线程池那?Java中已经提供了创建线程池的一个类：Executor</p>
+<p>而我们创建时，一般使用它的子类：ThreadPoolExecutor.</p>
+<p>复制</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public ThreadPoolExecutor(int corePoolSize,  </span><br><span class="line">                          int maximumPoolSize,  </span><br><span class="line">                          long keepAliveTime,  </span><br><span class="line">                          TimeUnit unit,  </span><br><span class="line">                          BlockingQueue&lt;Runnable&gt; workQueue,  </span><br><span class="line">                          ThreadFactory threadFactory,  </span><br><span class="line">                          RejectedExecutionHandler handler)</span><br></pre></td></tr></table></figure>
+
+<p>这是其中最重要的一个构造方法，这个方法决定了创建出来的线程池的各种属性，下面依靠一张图来更好的理解线程池和这几个参数：<br><img src="/2019/06/05/%E7%BA%BF%E7%A8%8B/20180419002550514" alt="img"></p>
+<p>上图中，我们可以看出，线程池中的corePoolSize就是线程池中的核心线程数量，这几个核心线程，只是在没有用的时候，也不会被回收，maximumPoolSize就是线程池中可以容纳的最大线程的数量，而keepAliveTime，就是线程池中除了核心线程之外的其他的最长可以保留的时间，因为在线程池中，除了核心线程即使在无任务的情况下也不能被清除，其余的都是有存活时间的，意思就是非核心线程可以保留的最长的空闲时间，而util，就是计算这个时间的一个单位，workQueue，就是等待队列，任务可以储存在任务队列中等待被执行，执行的是FIFIO原则（先进先出）。threadFactory，就是创建线程的线程工厂，最后一个handler,是一种拒绝策略，我们可以在任务满了知乎，拒绝执行某些任务。</p>
+<p>线程池的执行流程又是怎样的呢？<br><img src="/2019/06/05/%E7%BA%BF%E7%A8%8B/2018041900353665" alt="img"></p>
+<p>有图我们可以看出，任务进来时，首先执行判断，判断核心线程是否处于空闲状态，如果不是，核心线程就先就执行任务，如果核心线程已满，则判断任务队列是否有地方存放该任务，若果有，就将任务保存在任务队列中，等待执行，如果满了，在判断最大可容纳的线程数，如果没有超出这个数量，就开创非核心线程执行任务，如果超出了，就调用handler实现拒绝策略。</p>
+<p>handler的拒绝策略：</p>
+<p>有四种：<br>第一种AbortPolicy:不执行新任务，直接抛出异常，提示线程池已满<br>第二种DisCardPolicy:不执行新任务，也不抛出异常<br>第三种DisCardOldSetPolicy:将消息队列中的第一个任务替换为当前新进来的任务执行<br>第四种CallerRunsPolicy:直接调用execute来执行当前任务</p>
+<h1 id="四种常见的线程池："><a href="#四种常见的线程池：" class="headerlink" title="四种常见的线程池："></a>四种常见的线程池：</h1><p><strong>CachedThreadPool</strong>:可缓存的线程池，该线程池中没有核心线程，非核心线程的数量为Integer.max_value，就是无限大，当有需要时创建线程来执行任务，没有需要时回收线程，适用于耗时少，任务量大的情况。</p>
+<p><strong>SecudleThreadPool</strong>:周期性执行任务的线程池，按照某种特定的计划执行线程中的任务，有核心线程，但也有非核心线程，非核心线程的大小也为无限大。适用于执行周期性的任务。</p>
+<p><strong>SingleThreadPool</strong>:只有一条线程来执行任务，适用于有顺序的任务的应用场景。</p>
+<p><strong>FixedThreadPool</strong>:定长的线程池，有核心线程，核心线程的即为最大的线程数量，没有非核心线程。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Keep me coding</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Zhao Zhejian 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Zhao Zhejian 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/06/03/%E5%AF%B9%E8%BF%9B%E7%A8%8B%E7%9A%84%E8%A1%A5%E5%85%85%E2%80%94%E2%80%94%E5%86%85%E6%A0%B8/" rel="prev" title="对进程的补充——内核">
+                  <i class="fa fa-chevron-left"></i> 对进程的补充——内核
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/06/06/CPU%E8%B0%83%E5%BA%A6/" rel="next" title="CPU调度">
+                  CPU调度 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhao Zhejian</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"cosmogram/cosmogram.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

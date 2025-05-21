@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cosmogram.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="磁盘的结构磁盘(Disk)是由表面涂有磁性物质的金属或塑料构成的圆形盘片，通过一个称为磁头的导体线圈从磁盘中存取数据。在读&#x2F;写操作期间，磁头固定，磁盘在下面高速旋转。如下图所示，磁盘的盘面上的数据存储在一组同心圆中，称为磁道。每个磁道与磁头一样宽, 一个盘面有上千个磁道。磁道又划分为几百个扇区，每个扇区固定存储大小（通常为512B), 一个扇区称为一个盘块。相邻磁道及相邻扇区间通过一定的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="磁盘">
+<meta property="og:url" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/index.html">
+<meta property="og:site_name" content="CosmoGram">
+<meta property="og:description" content="磁盘的结构磁盘(Disk)是由表面涂有磁性物质的金属或塑料构成的圆形盘片，通过一个称为磁头的导体线圈从磁盘中存取数据。在读&#x2F;写操作期间，磁头固定，磁盘在下面高速旋转。如下图所示，磁盘的盘面上的数据存储在一组同心圆中，称为磁道。每个磁道与磁头一样宽, 一个盘面有上千个磁道。磁道又划分为几百个扇区，每个扇区固定存储大小（通常为512B), 一个扇区称为一个盘块。相邻磁道及相邻扇区间通过一定的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2020643419.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F20235415D.gif">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2023640244.gif">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2023I5X8.gif">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2023Z3160.gif">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F20241531R.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2024354K2.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2024610124.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2024UJ44.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/161506.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F202542R36.jpg">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F203220E27.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2031911211.jpg">
+<meta property="article:published_time" content="2019-06-17T13:41:47.000Z">
+<meta property="article:author" content="Zhao Zhejian">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2020643419.jpg">
+
+
+<link rel="canonical" href="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/","path":"2019/06/17/磁盘/","title":"磁盘"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>磁盘 | CosmoGram</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CosmoGram</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZZJ's Blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">磁盘的结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">磁盘调度算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%88%E6%9D%A5%E5%85%88%E6%9C%8D%E5%8A%A1-First-Come-First-Served-FCFS-%E7%AE%97%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">先来先服务(First Come First Served, FCFS)算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%9F%AD%E5%AF%BB%E6%89%BE%E6%97%B6%E9%97%B4%E4%BC%98%E5%85%88-Shortest-Seek-Time-First-SSTF-%E7%AE%97%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">最短寻找时间优先(Shortest Seek Time First, SSTF)算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%AB%E6%8F%8F-SCAN-%E7%AE%97%E6%B3%95%EF%BC%88%E5%8F%88%E7%A7%B0%E7%94%B5%E6%A2%AF%E7%AE%97%E6%B3%95%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">扫描(SCAN)算法（又称电梯算法）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E6%89%AB%E6%8F%8F-Circulair-SCAN-C-SCAN-%E7%AE%97%E6%B3%95"><span class="nav-number">2.4.</span> <span class="nav-text">循环扫描(Circulair SCAN, C-SCAN)算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E7%9A%84%E7%AE%A1%E7%90%86%EF%BC%9A%E7%A3%81%E7%9B%98%E5%88%9D%E5%A7%8B%E5%8C%96%E3%80%81%E5%BC%95%E5%AF%BC%E5%9D%97%E3%80%81%E5%9D%8F%E5%9D%97"><span class="nav-number">3.</span> <span class="nav-text">磁盘的管理：磁盘初始化、引导块、坏块</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">磁盘初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%AF%BC%E5%9D%97"><span class="nav-number">3.2.</span> <span class="nav-text">引导块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9D%8F%E5%9D%97"><span class="nav-number">3.3.</span> <span class="nav-text">坏块</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E7%82%B9%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">文件系统知识点总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E7%BB%93%E6%9E%84"><span class="nav-number">4.1.</span> <span class="nav-text">磁盘结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84"><span class="nav-number">4.2.</span> <span class="nav-text">内存结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0%E6%A6%82%E8%BF%B0"><span class="nav-number">4.3.</span> <span class="nav-text">文件系统实现概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E7%B4%A2%E5%BC%95%E5%88%86%E9%85%8D%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.4.</span> <span class="nav-text">混合索引分配的实现</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zhao Zhejian"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Zhao Zhejian</p>
+  <div class="site-description" itemprop="description">愚者困惑，智者提问</div>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cosmogram" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/zhaozhejian@mail.ustc.edu.cn" title="E-Mail → zhaozhejian@mail.ustc.edu.cn"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/291014857" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;291014857" rel="noopener" target="_blank"><i class="fa custom bilibili fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/CosmogramZhao" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/zhaozhejian" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;zhaozhejian" rel="noopener" target="_blank"><i class="fab fa-facebook fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/CosmogramZhao" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/id/cosmogram" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;id&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-steam fa-fw"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://zzj960.github.io/" title="https:&#x2F;&#x2F;zzj960.github.io&#x2F;" rel="noopener" target="_blank">My first blog (abandoned)</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cosmogram.github.io/2019/06/17/%E7%A3%81%E7%9B%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhao Zhejian">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CosmoGram">
+      <meta itemprop="description" content="愚者困惑，智者提问">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="磁盘 | CosmoGram">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          磁盘
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-06-17 21:41:47" itemprop="dateCreated datePublished" datetime="2019-06-17T21:41:47+08:00">2019-06-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">存储管理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="磁盘的结构"><a href="#磁盘的结构" class="headerlink" title="磁盘的结构"></a>磁盘的结构</h1><p>磁盘(Disk)是<em><strong>由表面涂有磁性物质的金属或塑料构成的圆形盘片，通过一个称为磁头的导体线圈从磁盘中存取数据</strong></em>。在读&#x2F;写操作期间，磁头固定，磁盘在下面高速旋转。如下图所示，<em><strong>磁盘的盘面上的数据存储在一组同心圆中，称为磁道</strong></em>。每个磁道与磁头一样宽, 一个盘面有上千个磁道。磁道又划分为几百个扇区，每个扇区固定存储大小（通常为512B), 一个扇区称为一个盘块。相邻磁道及相邻扇区间通过一定的间隙分隔开，以避免精度错误。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>注意，由于扇区按固定圆心角度划分，所以密度从最外道向里道增加，<em><strong>磁盘的存储能力受限于最内道的最大记录密度</strong></em>。</p>
+</blockquote>
+<p>磁盘安装在一个磁盘驱动器中，它由磁头臂、用于旋转磁盘的主轴和用于数据输入&#x2F;输 出的电子设备组成。如图4-24所示，多个盘片垂直堆叠，组成磁盘组，每个盘面对应一个 磁头，所有磁头固定在一起，与磁盘中心的距离相同且一起移动。所有盘片上相对位置相同 的磁道组成柱面。按照这种物理结构组织，<em><strong>扇区就是磁盘可寻址的最小存储单位</strong></em>，磁盘地址 用“柱面号•盘面号•扇区号（或块号）”表示。<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2020643419.jpg" alt="img"><br>磁盘按不同方式可以分为若干类型：磁头相对于盘片的径向方向固定的称为固定头磁盘，每个磁道一个磁头；磁头可移动的称为活动头磁盘，磁头臂可以来回伸缩定位磁道。磁 盘永久固定在磁盘驱动器内的称为固定盘磁盘；可移动和替换的称为可换盘磁盘。</p>
+<h1 id="磁盘调度算法"><a href="#磁盘调度算法" class="headerlink" title="磁盘调度算法"></a>磁盘调度算法</h1><p>一次磁盘读写操作的时间由寻找（寻道）时间、延迟时间和传输时间决定：</p>
+<ol>
+<li><p>寻找时间Ts：活动头磁盘在读写信息前，<em><strong>将磁头移动到指定磁道所需要的时间</strong></em>。这个时间除跨越n条磁道的时间外，还包括启动磁臂的时间s，即：<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F20235415D.gif" alt="img"></p>
+<blockquote>
+<p>式中，m是与磁盘驱动器速度有关的常数，约为0.2ms，磁臂的启动时间约为2ms。</p>
+</blockquote>
+</li>
+<li><p>延迟时间Tr：<em><strong>磁头定位到某一磁道的扇区（块号）所需要的时间</strong></em>，设磁盘的旋转速度为r，则：<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2023640244.gif" alt="img"></p>
+<blockquote>
+<p>对于硬盘，典型的旋转速度为5400r&#x2F;m，相当于一周11.1ms，则Tr为5.55ms;对于软盘，其旋转速度在<code>300~600r/m</code>之间，则Tr为<code>50~100ms</code>。</p>
+</blockquote>
+</li>
+<li><p>传输时间Tt：<em><strong>从磁盘读出或向磁盘写入数据所经历的时间</strong></em>，这个时间取决于每次所读&#x2F;写的字节数b和磁盘的旋转速度：<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2023I5X8.gif" alt="img"></p>
+<blockquote>
+<p>式中，r为磁盘每秒钟的转数；N为一个磁道上的字节数。</p>
+</blockquote>
+</li>
+</ol>
+<p>在磁盘存取时间的计算中，<em><strong>寻道时间与磁盘调度算法相关</strong></em>，下面将会介绍分析几种算法，而<em><strong>延迟时间和传输时间都与磁盘旋转速度相关</strong></em>，且为线性相关，所以在硬件上，转速是磁盘性能的一个非常重要的参数。</p>
+<p>总平均存取时间Ta可以表示为：<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2023Z3160.gif" alt="img"></p>
+<p>虽然这里给出了总平均存取时间的公式，但是这个平均值是没有太大实际意义的，因为在实际的磁盘I&#x2F;O操作中，存取时间与磁盘调度算法密切相关。<strong>调度算法直接决定寻找时间，从而决定了总的存取时间。</strong></p>
+<p>目前常用的磁盘调度算法有以下几种：</p>
+<h2 id="先来先服务-First-Come-First-Served-FCFS-算法"><a href="#先来先服务-First-Come-First-Served-FCFS-算法" class="headerlink" title="先来先服务(First Come First Served, FCFS)算法"></a>先来先服务(First Come First Served, FCFS)算法</h2><p><em><strong>FCFS算法根据进程请求访问磁盘的先后顺序进行调度</strong></em>，这是一种最简单的调度算法，如下图所示。该算法的优点是具有公平性。如果只有少量进程需要访问，且大部分请求都是访问簇聚的文件扇区，则有望达到较好的性能；但如果有大量进程竞争使用磁盘，那么这种算法在性能上往往接近于随机调度。所以，实际磁盘调度中考虑一些更为复杂的调度算法。<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F20241531R.jpg" alt="img"></p>
+<center>FCFS磁盘调度算法</center>
+
+<blockquote>
+<p>例如，磁盘请求队列中的请求顺序分别为55、58、39、18、90、160、150、38、184，磁头初始位置是100磁道，釆用FCFS算法磁头的运动过程如上图所示。磁头共移动了 (45+3+19+21+72+70+10+112+146)&#x3D;498 个磁道，平均寻找长度&#x3D;498&#x2F;9&#x3D;55.3。</p>
+</blockquote>
+<h2 id="最短寻找时间优先-Shortest-Seek-Time-First-SSTF-算法"><a href="#最短寻找时间优先-Shortest-Seek-Time-First-SSTF-算法" class="headerlink" title="最短寻找时间优先(Shortest Seek Time First, SSTF)算法"></a>最短寻找时间优先(Shortest Seek Time First, SSTF)算法</h2><p>SSTF算法选择调度处理的磁道是<em><strong>与当前磁头所在磁道距离最近的磁道</strong></em>，以使每次的寻找时间最短。当然，总是选择最小寻找时间并不能保证平均寻找时间最小，但是能提供比 FCFS算法更好的性能。这种算法会产生“饥饿”现象。如下图所示，若某时刻磁头正在 18号磁道，而在18号磁道附近频繁地增加新的请求，那么SSTF算法使得磁头长时间在18 号磁道附近工作，将使184号磁道的访问被无限期地延迟，即被“饿死”。</p>
+<p><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2024354K2.jpg" alt="img"></p>
+<center>SSTF磁盘调度算法</center>
+
+<p>例如，磁盘请求队列中的请求顺序分别为55、58、39、18、90、160、150、38、184，磁头初始位置是100磁道，釆用SSTF算法磁头的运动过程如上图所示。磁头共移动了 (10+32+3+16+1+20+132+10+24)&#x3D;248 个磁道，平均寻找长度&#x3D;248&#x2F;9&#x3D;27.5。</p>
+<h2 id="扫描-SCAN-算法（又称电梯算法）"><a href="#扫描-SCAN-算法（又称电梯算法）" class="headerlink" title="扫描(SCAN)算法（又称电梯算法）"></a>扫描(SCAN)算法（又称电梯算法）</h2><p>SCAN算法在磁头当前移动方向上选择与当前磁头所在磁道距离最近的请求作为下一次服务的对象，如下图所示。由于磁头移动规律与电梯运行相似，故又称为电梯调度算法。SCAN算法对最近扫描过的区域不公平，因此，它在访问局部性方面不如FCFS算法和 SSTF算法好。<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2024610124.jpg" alt="img"></p>
+<center>SCAN磁盘调度算法</center>
+
+<blockquote>
+<p>例如，磁盘请求队列中的请求顺序分别为55、58、39、18、90、160、150、38、184，磁头初始位置是100 磁道。釆用SCAN算法时，不但要知道磁头的当前位置，还要知道磁头的移动方向，假设磁头沿磁道号增大的顺序移动，则磁头的运动过程如上图所示。磁头共移动了(50+10+24+94+32+3+16+1+20)&#x3D;250 个磁道，平均寻找长度&#x3D;250&#x2F;9&#x3D;27.8。</p>
+</blockquote>
+<h2 id="循环扫描-Circulair-SCAN-C-SCAN-算法"><a href="#循环扫描-Circulair-SCAN-C-SCAN-算法" class="headerlink" title="循环扫描(Circulair SCAN, C-SCAN)算法"></a>循环扫描(Circulair SCAN, C-SCAN)算法</h2><p>在扫描算法的基础上规定磁头单向移动来提供服务，回返时直接快速移动至起始端而不服务任何请求。由于SCAN算法偏向于处理那些接近最里或最外的磁道的访问请求，所以使用改进型的C-SCAN算法来避免这个问题。</p>
+<p>釆用SCAN算法和C-SCAN算法时磁头总是严格地遵循从盘面的一端到另一端，显然，在实际使用时还可以改进，即磁头移动只需要到达最远端的一个请求即可返回，不需要到达磁盘端点。这种形式的SCAN算法和C-SCAN算法称为LOOK和C-LOOK调度。这是因为它们在朝一个给定方向移动前会查看是否有请求。注意，若无特别说明，也可以默认SCAN 算法和C-SCAN算法为LOOK和C-LOOK调度。<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2024UJ44.jpg" alt="img"></p>
+<center>C-SCAN磁盘调度算法</center>
+
+<blockquote>
+<p>例如，磁盘请求队列中的请求顺序分别为55、58、39、18、90、160、150、38、184，磁头初始位置是100磁道。釆用C-SCAN算法时，假设磁头沿磁道号增大的顺序移动，则磁头的运动过程如上图所示。磁头共移动了(50+10+24+166+20+1+16+3+32)&#x3D;322个磁道，平均寻道长度&#x3D;322&#x2F;9&#x3D;35.8。</p>
+</blockquote>
+<p>对比以上几种磁盘调度算法，FCFS算法太过简单，性能较差，仅在请求队列长度接近于1时才较为理想；SSTF算法较为通用和自然；SCAN算法和C-SCAN算法在磁盘负载较大时比较占优势。它们之间的比较见下表。<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/161506.png" alt="img"></p>
+<center>磁盘调度算法比较</center>
+
+<p><em><strong>除减少寻找时间外，减少延迟时间也是提高磁盘传输效率的重要因素。</strong></em>可以对盘面扇区进行交替编号，对磁盘片组中的不同盘面错位命名。假设每个盘面有8个扇区，磁盘片组共8个盘面，则可以釆用如下图所示的编号。<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F202542R36.jpg" alt="img"></p>
+<center>磁盘片组扇区编号</center>
+
+<p>磁盘是连续自转设备，磁头读&#x2F;写一个物理块后，需要经过短暂的处理时间才能开始读&#x2F; 写下一块。假设逻辑记录数据连续存放在磁盘空间中，若在盘面上按扇区交替编号连续存放，则连续读&#x2F;写多个记录时能减少磁头的延迟时间；同柱面不同盘面的扇区若能错位编号，连续读&#x2F;写相邻两个盘面的逻辑记录时也能减少磁头延迟时间。</p>
+<p><em><strong>由于传输时间由磁盘转速决定，所以无法通过其他方法减少传输时间。</strong></em>以上图为例，在随机扇区访问情况下，定位磁道中的一个扇区平均需要转过4个扇区，这时，延迟时间是传输时间的4倍，这是一种非常低效的存取方式。理想化的情况是不需要定位而直接连续读取扇区，没有延迟时间，这样磁盘数据存取效率可以成倍提高。但是由于读取扇区的顺序是不可预测的，所以延迟时间不可避免。图4-29中的编号方式是读取连续编号扇区时的一种方法。</p>
+<h1 id="磁盘的管理：磁盘初始化、引导块、坏块"><a href="#磁盘的管理：磁盘初始化、引导块、坏块" class="headerlink" title="磁盘的管理：磁盘初始化、引导块、坏块"></a>磁盘的管理：磁盘初始化、引导块、坏块</h1><h2 id="磁盘初始化"><a href="#磁盘初始化" class="headerlink" title="磁盘初始化"></a>磁盘初始化</h2><p>一个新的磁盘只是一个含有磁性记录材料的空白盘。<em><strong>在磁盘能存储数据之前，它必须分成扇区以便磁盘控制器能进行读和写操作，这个过程称为低级格式化（物理分区）。</strong></em>低级格式化为磁盘的每个扇区釆用特别的数据结构。每个扇区的数据结构通常由头、数据区域（通常为512B大小）和尾部组成。头部和尾部包含了一些磁盘控制器所使用的信息。</p>
+<p><em><strong>为了使用磁盘存储文件，操作系统还需要将自己的数据结构记录在磁盘上</strong></em>：第一步将磁盘分为由一个或多个柱面组成的分区（即我们熟悉的C盘、D盘等形式的分区）；第二步对物理分区进行逻辑格式化（创建文件系统)，操作系统将初始的文件系统数据结构存储到磁盘上，这些数据结构包括空闲和已分配的空间以及一个初始为空的目录。</p>
+<h2 id="引导块"><a href="#引导块" class="headerlink" title="引导块"></a>引导块</h2><p><em><strong>计算机启动时需要运行一个初始化程序（自举程序），它初始化CPU、寄存器、设备控制器和内存等，接着启动操作系统。</strong></em>为此，该自举程序应找到磁盘上的操作系统内核，装入内存，并转到起始地址，从而开始操作系统的运行。</p>
+<p>自举程序通常保存在ROM中，为了避免改变自举代码需要改变ROM硬件的问题，故只在ROM中保留很小的自举装入程序，将完整功能的自举程序保存在磁盘的启动块上，启动块位于磁盘的固定位。拥有启动分区的磁盘称为启动磁盘或者系统磁盘。</p>
+<h2 id="坏块"><a href="#坏块" class="headerlink" title="坏块"></a>坏块</h2><p>由于磁盘有移动部件且容错能力弱，所以容易导致一个或多个扇区损坏。部分磁盘甚至从出厂时就有坏扇区。根据所使用的磁盘和控制器，对这些块有多种处理方式。</p>
+<p>对于简单磁盘，如电子集成驱动器（IDE)。坏扇区可手工处理，如MS-DOS的Format 命令执行逻辑格式化时便会扫描磁盘以检查坏扇区。坏扇区在FAT表上会标明，因此程序不会使用。</p>
+<p>对于复杂的磁盘，如小型计算机系统接口（SCSI)，其控制器维护一个磁盘坏块链表。该链表在出厂前进行低级格式化时就初始化了，并在磁盘的整个使用过程中不断更新。低级格式化将一些块保留作为备用，对操作系统透明。控制器可以用备用块来逻辑地替代坏块，这种方案称为扇区备用。</p>
+<h1 id="文件系统知识点总结"><a href="#文件系统知识点总结" class="headerlink" title="文件系统知识点总结"></a>文件系统知识点总结</h1><h2 id="磁盘结构"><a href="#磁盘结构" class="headerlink" title="磁盘结构"></a>磁盘结构</h2><p><em><strong>引导控制块（Boot Control Block）</strong></em>包括系统从该分区引导操作系统所需要的信息。如果磁盘没有操作系统，那么这块的内容为空。它通常为分区的第一块。UFS称之为引导块(Boot Block)； NTFS 称之为分区引导扇区(Partition Boot Sector)。</p>
+<p><em><strong>分区控制块（Partition Control Block）</strong></em>包括分区详细信息，如分区的块数、块的大小、 空闲块的数量和指计、空闲FCB的数量和指针等。UPS称之为超级块(Superblock)；而NTFS 称之为主控文件表(Master File Table)。</p>
+<h2 id="内存结构"><a href="#内存结构" class="headerlink" title="内存结构"></a>内存结构</h2><p>内存分区表包含所有安装分区的信息。</p>
+<p>内存目录结构用来保存近来访问过的目录信息。对安装分区的目录，可以包括一个指向分区表的指针。</p>
+<p>系统范围的打开文件表，包括每个打开文件的FCB复制和其他信息。</p>
+<p>单个进程的打开文件表，包括一个指向系统范围内已打开文件表中合适条目和其他信息的指针。</p>
+<h2 id="文件系统实现概述"><a href="#文件系统实现概述" class="headerlink" title="文件系统实现概述"></a>文件系统实现概述</h2><p>为了创建一个文件，应用程序调用逻辑文件系统。逻辑文件系统知道目录结构形式，它将分配一个新的FCB 给文件，把相应目录读入内存，用新的文件名更新该目录和FCB,并将结果写回到磁盘。下图显示了一个典型的FCB。<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F203220E27.png" alt="img"></p>
+<center>典型的FCB</center>
+
+<p>一旦文件被创建，它就能用于I&#x2F;O，不过首先要打开文件。调用open将文件名传给文件系统，文件系统根据给定文件名搜索目录结构。部分目录结构通常缓存在内存中以加快目录操作。找到文件后，其FCB复制到系统范围的打开文件表。该表不但存储FCB，也有打开该文件的进程数量的条目。</p>
+<p>然后，单个进程的打开文件表中会增加一个条目，并通过指针将系统范围的打开文件表的条目同其他域（文件当前位置的指针和文件打开模式等）相连。调用open返回的是一个 指向单个进程的打开文件表中合适条目的指针。所以文件操作都是通过该指针进行。</p>
+<p>文件名不必是打开文件表的一部分，因为一旦完成对FCB在磁盘上的定位，系统就不 再使用文件名了。对于访问打开文件表的索引，UNIX称之为文件描述符(File Descriptor)；而Windows 2000称之为文件句柄(File Handle)。因此，只要文件没有被关闭，所有文件操 作通过打开文件表来进行。</p>
+<p>当一个进程关闭文件，就删除一个相应的单个进程打开文件表的条目即目录项，系统范 围内打开文件表的打开数也会递减。当打开文件的所有用户都关闭了一个文件时，更新的文 件信息会复制到磁盘的目录结构中，系统范围的打开文件表的条目也将删除。</p>
+<p>在实际中，系统调用open会首先搜索系统范围的打开文件表以确定某文件是否已被其 他进程所使用。如果是，就在单个进程的打开文件表中创建一项，并指向现有系统范围的打 开文件表的相应条目。该算法在文件已打开时，能节省大量开销。</p>
+<h2 id="混合索引分配的实现"><a href="#混合索引分配的实现" class="headerlink" title="混合索引分配的实现"></a>混合索引分配的实现</h2><p>混合索引分配已在UNIX系统中釆用。在UNK SystemV的索引结点中，共设置了 13 个地址项，即iaddr(0)~iaddr(12)，如下图所示。在BSD UNIX的索引结点中，共设置了 13 个地址项，它们都把所有的地址项分成两类，即直接地址和间接地址。<br><img src="/2019/06/17/%E7%A3%81%E7%9B%98/1-140F2031911211.jpg" alt="img"></p>
+<center>UNIX系统的inode结构示意图</center>
+1. 直接地址 为了提高对文件的检索速度，在索引结点中可设置10个直接地址项，即用iaddr(0)~iaddr(9)来存放直接地址。换言之，在这里的每项中所存放的是该文件数据所在盘块的盘块号。假如每个盘块的大小为4KB，当文件不大于40KB时，便可直接从索引结点中读出该文件的全部盘块号。
+2. 一次间接地址 对于大、中型文件，只釆用直接地址并不现实。可再利用索引结点中的地址项iaddr(10) 来提供一次间接地址。这种方式的实质就是一级索引分配方式。图中的一次间址块也就是索引块，系统将分配给文件的多个盘块号记入其中。在一次间址块中可存放1024个盘块号，因而允许文件长达4MB。
+3. 多次间接地址 当文件长度大于4MB+40KB（—次间址与10个直接地址项）时，系统还须釆用二次间 址分配方式。这时，用地址项iaddr(11)提供二次间接地址。该方式的实质是两级索引分配方 式。系统此时是在二次间址块中记入所有一次间址块的盘号。在釆用二次间址方式时，文件 最大长度可达4GB。同理，地址项iaddr(12)作为三次间接地址，其所允许的文件最大长度可达4TB。
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Keep me coding</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Zhao Zhejian 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Zhao Zhejian 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/06/16/SQL/" rel="prev" title="SQL">
+                  <i class="fa fa-chevron-left"></i> SQL
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/06/18/I-O%E7%AE%A1%E7%90%86/" rel="next" title="I/O管理">
+                  I/O管理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhao Zhejian</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"cosmogram/cosmogram.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

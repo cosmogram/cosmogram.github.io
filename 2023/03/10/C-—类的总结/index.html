@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cosmogram.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="类和对象类的声明、类的定义">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++—类的总结">
+<meta property="og:url" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="CosmoGram">
+<meta property="og:description" content="类和对象类的声明、类的定义">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311145832425.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311145912736.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311162649728.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311150330697.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311150510775.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311150623952.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311150722323.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311182338994.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311182627447.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311182941678.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183000599.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183011679.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230312113415539.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311184048705.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311184128753.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311184332689.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311184624295.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183804214.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311185805064.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183941338.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183950249.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183626656.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183401662.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183411046.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230520173421449.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230520174325384.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230520180257649.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230520180400266.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230521191301393.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230521225222335.png">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230521232118253.png">
+<meta property="article:published_time" content="2023-03-10T14:32:10.000Z">
+<meta property="article:author" content="Zhao Zhejian">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311145832425.png">
+
+
+<link rel="canonical" href="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/","path":"2023/03/10/C-—类的总结/","title":"C++—类的总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C++—类的总结 | CosmoGram</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CosmoGram</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZZJ's Blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text">类和对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E5%A3%B0%E6%98%8E%E3%80%81%E7%B1%BB%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">类的声明、类的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">1.2.</span> <span class="nav-text">对象的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%9B%AE%E7%9A%84"><span class="nav-number">1.3.</span> <span class="nav-text">设计类和对象的目的</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%EF%BC%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">构造函数，析构函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.</span> <span class="nav-text">构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.1.</span> <span class="nav-text">默认构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E6%88%90%E5%A4%8D%E5%88%B6%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.2.</span> <span class="nav-text">合成复制构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E6%88%90%E8%B5%8B%E5%80%BC%E6%93%8D%E4%BD%9C"><span class="nav-number">2.1.3.</span> <span class="nav-text">合成赋值操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.</span> <span class="nav-text">析构函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9A%90%E5%90%AB%E7%9A%84this%E6%8C%87%E9%92%88%EF%BC%8Cstatic%E6%88%90%E5%91%98%EF%BC%8C%E5%8F%8B%E5%85%83"><span class="nav-number">3.</span> <span class="nav-text">隐含的this指针，static成员，友元</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%90%E5%90%AB%E7%9A%84this%E6%8C%87%E9%92%88"><span class="nav-number">3.1.</span> <span class="nav-text">隐含的this指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static%E6%88%90%E5%91%98"><span class="nav-number">3.2.</span> <span class="nav-text">static成员</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#static%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98"><span class="nav-number">3.2.1.</span> <span class="nav-text">static数据成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#static%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98"><span class="nav-number">3.2.2.</span> <span class="nav-text">static函数成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#static%E5%B0%B1%E6%98%AF%E8%B5%B7%E6%8E%A7%E5%88%B6%E3%80%81%E9%99%90%E5%88%B6%E4%BD%9C%E7%94%A8"><span class="nav-number">3.2.3.</span> <span class="nav-text">static就是起控制、限制作用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8B%E5%85%83"><span class="nav-number">3.3.</span> <span class="nav-text">友元</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF"><span class="nav-number">4.</span> <span class="nav-text">继承</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%B1%BB%E3%80%81%E6%B4%BE%E7%94%9F%E7%B1%BB"><span class="nav-number">4.1.</span> <span class="nav-text">基类、派生类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#protected%E6%88%90%E5%91%98%E3%80%81%E7%BB%A7%E6%89%BF%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.1.</span> <span class="nav-text">protected成员、继承的方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#virtual%E5%87%BD%E6%95%B0%E3%80%81%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0%E3%80%81%E6%B4%BE%E7%94%9F%E7%B1%BB%E5%88%B0%E5%9F%BA%E7%B1%BB%E7%9A%84%EF%BC%88%E8%87%AA%E5%8A%A8%EF%BC%89%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.1.2.</span> <span class="nav-text">virtual函数、纯虚函数、派生类到基类的（自动）转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8B%E5%85%83%E5%85%B3%E7%B3%BB%E3%80%81%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E3%80%81%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="nav-number">4.1.3.</span> <span class="nav-text">友元关系、静态成员、作用域</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E3%80%81%E5%A4%8D%E5%88%B6%E6%8E%A7%E5%88%B6%E3%80%81%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="nav-number">4.2.</span> <span class="nav-text">构造函数、复制控制、析构函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-1"><span class="nav-number">4.2.1.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E3%80%81%E8%B5%8B%E5%80%BC%E3%80%81%E6%92%A4%E9%94%80%EF%BC%88%E6%9E%90%E6%9E%84%EF%BC%89"><span class="nav-number">4.2.2.</span> <span class="nav-text">复制、赋值、撤销（析构）</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zhao Zhejian"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Zhao Zhejian</p>
+  <div class="site-description" itemprop="description">愚者困惑，智者提问</div>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cosmogram" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/zhaozhejian@mail.ustc.edu.cn" title="E-Mail → zhaozhejian@mail.ustc.edu.cn"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/291014857" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;291014857" rel="noopener" target="_blank"><i class="fa custom bilibili fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/CosmogramZhao" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/zhaozhejian" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;zhaozhejian" rel="noopener" target="_blank"><i class="fab fa-facebook fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/CosmogramZhao" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/id/cosmogram" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;id&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-steam fa-fw"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://zzj960.github.io/" title="https:&#x2F;&#x2F;zzj960.github.io&#x2F;" rel="noopener" target="_blank">My first blog (abandoned)</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cosmogram.github.io/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhao Zhejian">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CosmoGram">
+      <meta itemprop="description" content="愚者困惑，智者提问">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="C++—类的总结 | CosmoGram">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++—类的总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-03-10 22:32:10" itemprop="dateCreated datePublished" datetime="2023-03-10T22:32:10+08:00">2023-03-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="类和对象"><a href="#类和对象" class="headerlink" title="类和对象"></a>类和对象</h1><h2 id="类的声明、类的定义"><a href="#类的声明、类的定义" class="headerlink" title="类的声明、类的定义"></a>类的声明、类的定义</h2><span id="more"></span>
+
+<p><strong>类的声明：</strong></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311145832425.png" alt="image-20230311145832425"></p>
+<p><em>可以声明一个类而不定义它，但一般不会怎么做。</em></p>
+<p><strong>类的定义：</strong></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311145912736.png" alt="image-20230311145912736"></p>
+<p><em>定义一个类时，也就是定义了一个类型。定义类时并不会进行存储分配。</em></p>
+<p><strong>类</strong>是由<strong>成员</strong>、<strong>成员函数</strong>（包括构造函数）组成。成员函数可以在类的定义内或类的定义外去定义。<br><strong>成员函数</strong>由返回<strong>类型</strong>、<strong>函数名</strong>、<strong>形参表</strong>、<strong>函数体组成</strong>。</p>
+<blockquote>
+<p><em>在形参表后面可以加上const，来定义一个常量成员函数</em>，其作用为：该const成员函数不能修改调用该函数的对象，即：该函数的功能为只读的</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311162649728.png" alt="image-20230311162649728"></p>
+</blockquote>
+<h2 id="对象的定义"><a href="#对象的定义" class="headerlink" title="对象的定义"></a>对象的定义</h2><p>一旦定义了类，就可以定义该类的对象。有两种方式定义对象，它们是等价的。</p>
+<p><strong>对象的定义：</strong></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311150330697.png" alt="image-20230311150330697"></p>
+<p><em>定义对象时会进行存储分配。</em></p>
+<blockquote>
+<p>定义类的同时定义对象：</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311150510775.png" alt="image-20230311150510775"></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311150623952.png" alt="image-20230311150623952"></p>
+</blockquote>
+<h2 id="设计类和对象的目的"><a href="#设计类和对象的目的" class="headerlink" title="设计类和对象的目的"></a>设计类和对象的目的</h2><p>目的是进行数据抽象和封装，其好处是：</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311150722323.png" alt="image-20230311150722323"></p>
+<h1 id="构造函数，析构函数"><a href="#构造函数，析构函数" class="headerlink" title="构造函数，析构函数"></a>构造函数，析构函数</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p><strong>构造函数</strong>是特殊的成员函数。构造函数<strong>不能为const</strong>成员函数。构造函数在定义时可以比其他成员函数多一个初始化列表（放在形参表后，以<code>:</code>开头后面接上初始化列表）</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311182338994.png" alt="image-20230311182338994"></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311182627447.png" alt="image-20230311182627447"></p>
+<h3 id="默认构造函数"><a href="#默认构造函数" class="headerlink" title="默认构造函数"></a>默认构造函数</h3><p>只要定义一个对象时没有初始化，就会调用默认构造函数。默认构造函数即为：为所有形参提供默认实参的构造函数。<br><strong>合成默认构造函数</strong>（只有在没有定义任何一个构造函数时，编译器才会生成一个默认构造函数）会使用默认的初始化规则进行初始化。明白的说就是，该类中int会初始化为0、指针不会初始化、类类型的成员会调用它自己的默认构造函数进行初始化等等。（因此存在指针这类需要分配资源的成员时，要自己定义构造函数）</p>
+<blockquote>
+<p>通过默认构造函数初始化对象时要注意，对象后不要加括号，要不然会被认为是函数声明。</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311182941678.png" alt="image-20230311182941678"></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183000599.png" alt="image-20230311183000599"></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183011679.png" alt="image-20230311183011679"></p>
+</blockquote>
+<p>最好使用<strong>默认实参的形式</strong>定义构造函数。即：在形参列表里面给形参赋一个默认的值，然后后面的初始化列表里面将该形参赋给对应的数据成员。</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230312113415539.png" alt="image-20230312113415539"></p>
+<p>这样可以减少代码重复。因为，这样可以不用特地去写一个默认构造函数，直接在可以在实现接收参数的构造函数时同时实现默认构造函数。</p>
+<blockquote>
+<p>构造函数会对传入的实参自动进行类型转换。</p>
+</blockquote>
+<h3 id="合成复制构造函数"><a href="#合成复制构造函数" class="headerlink" title="合成复制构造函数"></a>合成复制构造函数</h3><p>其为C++编译器为用户合成的，其行为是逐个成员初始化，即：复制传进去的对象的所有非static成员。<br>如果自己定义了一个复制构造函数，则不会产生合成复制构造函数。通常在类里有指针数据成员的时候（分配了内存资源，或是要分配其他资源）需要自己定义复制构造函数。</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311184048705.png" alt="image-20230311184048705"></p>
+<p><strong>只有不存在任何其他的构造函数时，才会生成合成默认构造函数，所以：如果定义了复制构造函数，就必须定义默认构造函数！</strong></p>
+<h3 id="合成赋值操作"><a href="#合成赋值操作" class="headerlink" title="合成赋值操作"></a>合成赋值操作</h3><p>类似合成复制构造函数，都是逐个成员初始化（赋值），将新的对象初始化为原对象的副本。<br>和合成复制构造函数一样，如果类里有指针数据成员（需要分配资源），需要自己重载一个赋值操作符。（同样自己重载了，编译器就不会生成合成赋值操作）</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311184128753.png" alt="image-20230311184128753"></p>
+<h2 id="析构函数"><a href="#析构函数" class="headerlink" title="析构函数"></a>析构函数</h2><p>其作用是<strong>资源回收、释放资源</strong>。<br><strong>一般类对象</strong>会在<em>超出其作用域</em>（即花括号）时自动调用析构函数，释放资源。（删除每一个非static成员）<br><strong>动态内存分配的对象</strong>（即用指针以及new出来的对象）<em>只会在指针被删除</em>（delete该指针）时才会调用析构函数。否则即使超出作用域，其对象以及其对象内部使用的任何资源都不会被释放。<br>与合成复制构造函数、合成赋值操作不同，<strong>即使自己定义了析构函数，编译器总是会生成合成析构函数</strong>，而且在运行完了自己定义的析构函数后，总是会运行合成析构函数。</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311184332689.png" alt="image-20230311184332689"></p>
+<h1 id="隐含的this指针，static成员，友元"><a href="#隐含的this指针，static成员，友元" class="headerlink" title="隐含的this指针，static成员，友元"></a>隐含的this指针，static成员，友元</h1><h2 id="隐含的this指针"><a href="#隐含的this指针" class="headerlink" title="隐含的this指针"></a>隐含的this指针</h2><p><strong>每个成员函数</strong>（static成员函数除外）都有一个隐含的形参this。在调用函数时，形参this初始化为调用函数的对象的地址。在成员函数中，对这类的成员的任何没有前缀的使用，都被编译为通过指针this实现的引用。（当然在函数体中也可以显式地使用this指针，虽然没有必要）</p>
+<p>一般this指针是不需要用到的，但在需要返回对象本身的时候就可以用到<code>*this</code></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311184624295.png" alt="image-20230311184624295"></p>
+<blockquote>
+<p>对于<strong>非const成员函数</strong>，this是一个指向该类的对象的const指针，this指向的值可以改变，但不能改变this保存的地址。<br>在<strong>const成员函数</strong>里，this是一个指向const类对象的const指针，既不能改变所指向对象的值，也不能改变this保存的地址。</p>
+</blockquote>
+<h2 id="static成员"><a href="#static成员" class="headerlink" title="static成员"></a>static成员</h2><p>访问static成员可以通过类的域操作符，也可以通过对象引用。</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183804214.png" alt="image-20230311183804214"></p>
+<h3 id="static数据成员"><a href="#static数据成员" class="headerlink" title="static数据成员"></a>static数据成员</h3><p>static数据成员是<strong>与类关联的</strong>（并不和该类的对象关联）其只能在类定义的外面定义、且只能定义一次。（不是也不能通过构造函数初始化的）</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311185805064.png" alt="image-20230311185805064"></p>
+<blockquote>
+<p>特殊的是const static成员，其为常量成员。需要在类定义的内部定义，但还是需要在类定义外部声明一次。</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183941338.png" alt="image-20230311183941338"></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183950249.png" alt="image-20230311183950249"></p>
+</blockquote>
+<h3 id="static函数成员"><a href="#static函数成员" class="headerlink" title="static函数成员"></a>static函数成员</h3><p>和static数据成员一样，其是与类关联的（并不和该类的对象关联）也因此没有this指针。</p>
+<h3 id="static就是起控制、限制作用"><a href="#static就是起控制、限制作用" class="headerlink" title="static就是起控制、限制作用"></a>static就是起控制、限制作用</h3><p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183626656.png" alt="image-20230311183626656"></p>
+<h2 id="友元"><a href="#友元" class="headerlink" title="友元"></a>友元</h2><p>目的是允许特定的其它的类及其成员函数访问本类的私有成员（protected、private）。</p>
+<p>通过在本类里面添加friend类或函数。</p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183401662.png" alt="image-20230311183401662"></p>
+<p><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230311183411046.png" alt="image-20230311183411046"></p>
+<p>因此添加的类或函数需要在本类前定义好。如果想把每一个重载函数设为友元的话，需要对每一个都声明为friend。</p>
+<h1 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h1><p>C++ Primer里有段话概括的挺好的：<br><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230520173421449.png" alt="image-20230520173421449"></p>
+<h2 id="基类、派生类"><a href="#基类、派生类" class="headerlink" title="基类、派生类"></a>基类、派生类</h2><h3 id="protected成员、继承的方式"><a href="#protected成员、继承的方式" class="headerlink" title="protected成员、继承的方式"></a>protected成员、继承的方式</h3><p>protected成员有以下性质：<br><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230520174325384.png" alt="image-20230520174325384"></p>
+<p>注意，这里有个比较绕的地方（我感觉），子类其实并不能访问父类的protected成员，它的作用可以这么想：子类继承了父类的protected成员，因此<strong>子类可以用自己继承到的那个protected成员，但不能用父类的protected成员</strong>（虽然private成员其实也继承了，只是不可见而已，但这样记忆更有条理点，不会那么绕。）。而public成员则是，无论是自己、子类、还是别的类、甚至是任何一个地方（作用域内）都可以直接用（访问）。</p>
+<p>关于private，这个文章<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2063303">私有成员是否会被继承</a>感觉挺好的，写的是Java的，但感觉C++应该也差不多。</p>
+<p><em><strong>继承的格式</strong></em>：<img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230520180257649.png" alt="image-20230520180257649"></p>
+<p>其中access-label（继承的方式）则有如下三种：<br><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230520180400266.png" alt="image-20230520180400266"></p>
+<p>这里要注意：实际上，无论继承的方式如何，<em>其子类对父类成员的访问权限都是一样的不会变</em>，因为该访问权限看的是父类成员自己到底是什么类型的成员，而不是看继承方式。而这里的<em>继承方式影响的则只是使用该子类的用户对子类从父类继承而来的成员的访问权限</em>。</p>
+<h3 id="virtual函数、纯虚函数、派生类到基类的（自动）转换"><a href="#virtual函数、纯虚函数、派生类到基类的（自动）转换" class="headerlink" title="virtual函数、纯虚函数、派生类到基类的（自动）转换"></a>virtual函数、纯虚函数、派生类到基类的（自动）转换</h3><p>上面说的三大概念之一—<strong>动态绑定</strong>就是通过<strong>虚函数</strong>来实现的。（动态绑定是指在程序运行时才确定函数调用的对象，而不是在程序编译时确定。）<!--实际上简单来讲虚函数、动态绑定、多态讲的是同样的东西--><strong>多态</strong>也是通过虚函数来实现的。（多态是指同一种操作作用于不同的对象，会产生不同的结果。)<!--实际上重载也可以做到，但是这样做不到基类动态调用子类的函数--><br>C++中，<strong>函数调用默认不使用动态绑定</strong>。要触发动态绑定，必须满足：<em>1.只有指定为虚函数的成员函数才能进行动态绑定。2.必须通过基类类型的引用或指针进行调用。</em><br><strong>成员函数默认为非虚函数</strong>（非虚函数则不能进行动态绑定）<br>虚函数的目的就是为了允许用基类的指针或引用来调用子类的这个函数。而<em>纯虚函数目的则是为了实现一个接口，起到一个规范的作用，规范继承这个类的程序员必须实现这个函数</em>（否则编译会报错）。</p>
+<p><em><strong>纯虚函数格式</strong></em>（在函数原型后面加上<code>=0</code>）：<br><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230521191301393.png" alt="image-20230521191301393"></p>
+<!--虚函数的主要目的就是让子类可以对该操作（函数）进行重写（即：重定义），编写对于该操作自己需要的逻辑。而非虚函数是不能在子类里重写的，子类从父类那里继承是什么样，就是什么样，改不了。当然了，子类可以定义一个名字一模一样的函数，但这样是不能**通过父类对象来动态使用子类的该函数的**，这样实现的函数类似普通的重载。-->
+
+<p>每个派生类对象都包含基类部分，所以<em><strong>1.可以将基类类型的引用绑定到派生类对象的基类部分，2.也可以用指向基类的指针指向派生类对象</strong></em>（实际上是指向其中的基类部分）。<br>概括来说就是派生类可以当作基类来使用。但要注意的是，<strong>只有派生类到基类的转换，而基类到派生类的转换是根本没有的</strong>。因为很显然，派生类有基类的一切（无论是其成员还是各种操作），因此基类类型的引用和指针可以安全地引用派生类对象；而基类却只有派生类的一部分，如果基类转换过去那就会存在很多缺失，因此是不被允许的（但代码上却可以通过static_cast强制类型转换）。</p>
+<h3 id="友元关系、静态成员、作用域"><a href="#友元关系、静态成员、作用域" class="headerlink" title="友元关系、静态成员、作用域"></a>友元关系、静态成员、作用域</h3><p><strong>友元关系不能继承</strong>。也就是说，父类的友元对子类的私有成员没有访问权限。如果需要访问子类的私有成员，则子类需要将访问权限授予父类的友元（就是将它也写为自己的友元）。</p>
+<p><strong>父类的static成员在整个继承层次中只有一个这样的成员</strong>。无论父类派送出多少个子类，每个static成员只有一个实例。至于static成员的访问控制，则是和其它成员一样的规则，如果是private的话，子类不能访问它。<br><em>因为每个static成员在整个继承层次中只有一个实例，所以通过父类访问的static成员、通过子类访问的static成员；通过作用域操作符访问的、通过点或箭头访问的都是同一个东西——该static成员。</em></p>
+<p>每个类都保持自己的作用域。在继承情况下，<strong>子类的作用域嵌套在父类作用域中</strong>。如果在子类中找不到名字，那就会在外围父类作用域里找该名字的定义。（也正是这种类作用域的嵌套，使得子类可以直接访问父类的成员）</p>
+<h2 id="构造函数、复制控制、析构函数"><a href="#构造函数、复制控制、析构函数" class="headerlink" title="构造函数、复制控制、析构函数"></a>构造函数、复制控制、析构函数</h2><h3 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h3><p>构造顺序：先构造父类部分，再构造子类自己这部分（就是先运行父类的构造函数，再运行子类的构造函数）<br>子类的<strong>合成默认构造函数</strong>有特殊之处：除了初始化自己的数据成员外，还需要初始化父类部分，其父类部分是由父类自己的默认构造函数初始化的。当然，和所有类一样，可以自己定义默认构造函数，也可以定义含参数的构造函数。<br>下面是一个子类构造函数通过向父类构造函数传递实参来初始化的例子（因为子类不能通过初始化列表直接初始化继承而来的成员，所以需要用到父类的构造函数）：<br><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230521225222335.png" alt="image-20230521225222335"></p>
+<p>这里要注意：子类只能初始化直接父类。例如，子类是不能初始化父类的父类的！<!--深层次的原因好像是：父类的父类初始化是由父类的构造函数决定的，这部分对于父类自己，以及继承它的所有子类来说全是一样的，所以，子类自然无权改变这部分--></p>
+<h3 id="复制、赋值、撤销（析构）"><a href="#复制、赋值、撤销（析构）" class="headerlink" title="复制、赋值、撤销（析构）"></a>复制、赋值、撤销（析构）</h3><p>和所有类一样，不含指针的类可以用合成复制、赋值、撤销操作。（如果子类显示定义自己的复制构造函数或赋值构造函数，则该定义将完全覆盖默认的合成构造、赋值函数）</p>
+<p><em><strong>复制构造函数</strong></em>和一般构造函数一样，先是通过调用父类的复制构造函数，将父类部分复制过来，然后运行自己的复制构造部分。<br>自己实现<em><strong>赋值构造函数</strong></em>时要注意的是，<em>赋值操作符必须防止自身赋值</em>，写代码时加上类似如下的判断就行：<br><img src="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/image-20230521232118253.png" alt="image-20230521232118253"></p>
+<p>上面代码还需要注意的是：和一般构造函数一样，这里也是先将子类的父类部分通过父类的赋值运算符赋值给新子类的父类部分（这里运用到了子类向父类的转换），然后再是为子类自己的成员赋值。</p>
+<p><em><strong>析构函数</strong></em>和复制构造函数、赋值操作符不一样：子类不负责撤销（析构）父类对象的成员（每个析构函数只负责清除自己的成员），当然了合成默认析构都是自动完成的，需要注意的是析构的顺序正好和构造时顺序相反，先运行子类的析构函数、再运行父类的析构函数。</p>
+<blockquote>
+<p><em><strong>虚析构函数</strong></em>；<em><strong>非虚的构造和赋值函数</strong></em>：<br>1.因为存在子类到父类的转换，所以调用析构函数的时候，如果析构函数不是虚函数的话，作为一个指向子类的父类指针析构的时候只会调用父类的析构函数，而导致子类的成员没有被释放（析构）掉。因此析构函数需要是虚的。<br>2.构造函数则不需要为虚。因为在构造函数（除赋值构造）运行时，对象的动态类型状态还不完整；而对赋值操作符来讲，因为每个类型都有各自对应的、且参数不同（各自的类型对象）的赋值构造函数，所以虚函数并没有什么作用。所以他们都没必要是虚的。</p>
+<!--虚函数需要的是参数相同的同名函数，二者缺一不可-->
+<p><strong>还有个需要注意的地方</strong>：在构造过程中以及在析构过程中，类的对象是不完整的，而且其类型是在发生变化的（例如：析构的时候子类对象的子类部分被析构掉后就变成了父类对象）。因此<em>在构造、析构函数里调用虚函数的话，其会绑定对应继承层级、类型的对象</em>。即：还是刚才那个例子，子类析构变成父类后，其如果调用了虚函数，则运行的就是绑定了父类版本的虚函数。</p>
+</blockquote>
+<!--一下用父类、一下用基类是为了让你能够熟悉地认识到它们是一个东西，时时刻刻提醒你-->
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Keep me coding</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Zhao Zhejian 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Zhao Zhejian 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/" rel="prev" title="固态硬盘">
+                  <i class="fa fa-chevron-left"></i> 固态硬盘
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/03/11/C-%E4%B8%ADconst%E7%9A%84%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3/" rel="next" title="C++中const的用法详解">
+                  C++中const的用法详解 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhao Zhejian</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"cosmogram/cosmogram.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

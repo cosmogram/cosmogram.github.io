@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cosmogram.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="固态硬盘为什么快？以及到底快在哪？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="固态硬盘">
+<meta property="og:url" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/index.html">
+<meta property="og:site_name" content="CosmoGram">
+<meta property="og:description" content="固态硬盘为什么快？以及到底快在哪？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-8ef2e9a8d33699810e403d7f914e39f1_720w.webp">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-c442b546bcda5a2ef2e16f4d271eb216_720w.webp">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-179c1bcc35da84f03338636469fe27d3_720w.webp">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-b7eed533dced49f54b6d57f240152f71_720w.webp">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-4b867455094192dc9d28087d42c59f0e_720w.webp">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-fbd57f6adaa8e995d6310f59e515e273_720w.webp">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-f23bf3f7f634997b31150e24066e87aa_720w.webp">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-dcaf08be0aa955fc6f373239be0d53b9_720w.webp">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-a69ecb35d5b1547a65a0968db9bb5e77_720w.webp">
+<meta property="og:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-5502f9968138cf6b36545a740c2d68d1_720w.webp">
+<meta property="article:published_time" content="2023-03-02T04:11:39.000Z">
+<meta property="article:author" content="Zhao Zhejian">
+<meta property="article:tag" content="硬件">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-8ef2e9a8d33699810e403d7f914e39f1_720w.webp">
+
+
+<link rel="canonical" href="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/","path":"2023/03/02/固态硬盘/","title":"固态硬盘"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>固态硬盘 | CosmoGram</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CosmoGram</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZZJ's Blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zhao Zhejian"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Zhao Zhejian</p>
+  <div class="site-description" itemprop="description">愚者困惑，智者提问</div>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cosmogram" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/zhaozhejian@mail.ustc.edu.cn" title="E-Mail → zhaozhejian@mail.ustc.edu.cn"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/291014857" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;291014857" rel="noopener" target="_blank"><i class="fa custom bilibili fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/CosmogramZhao" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/zhaozhejian" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;zhaozhejian" rel="noopener" target="_blank"><i class="fab fa-facebook fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/CosmogramZhao" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/id/cosmogram" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;id&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-steam fa-fw"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://zzj960.github.io/" title="https:&#x2F;&#x2F;zzj960.github.io&#x2F;" rel="noopener" target="_blank">My first blog (abandoned)</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cosmogram.github.io/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhao Zhejian">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CosmoGram">
+      <meta itemprop="description" content="愚者困惑，智者提问">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="固态硬盘 | CosmoGram">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          固态硬盘
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-03-02 12:11:39" itemprop="dateCreated datePublished" datetime="2023-03-02T12:11:39+08:00">2023-03-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%BB%84/" itemprop="url" rel="index"><span itemprop="name">计组</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%BB%84/%E5%AD%98%E5%82%A8%E8%AE%BE%E5%A4%87/" itemprop="url" rel="index"><span itemprop="name">存储设备</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>固态硬盘为什么快？以及到底快在哪？</p>
+<span id="more"></span>
+
+<p>这里需要先了解一下机械硬盘的结构，机械硬盘采用磁性碟片来存储数据，这是机械硬盘的结构图。</p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-8ef2e9a8d33699810e403d7f914e39f1_720w.webp" alt="img"></p>
+<p>储存数据的地方啊就是这个磁盘磁片，把数据写到磁盘磁片的结构啊就是这个磁头。写入以及读取数据的时候呢，这个电机啊就让这个磁盘磁片转起来，然后磁头就会到达要写数据的扇区，把数据写进去。工作原理就有点像那种留声机工作原理。</p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-c442b546bcda5a2ef2e16f4d271eb216_720w.webp" alt="img"></p>
+<p>机械硬盘是上下盘面同时进数据读取的。而且机械硬盘的旋转速度要远高于唱片（目前机械硬盘的常见转速是 7200 r&#x2F;min），所以机械硬盘在读取或写入数据时，非常害怕晃动和磕碰。另外，因为机械硬盘的超高转速，如果内部有灰尘，则会造成磁头或盘片的损坏，所以机械硬盘内部是封闭的，如果不是在无尘环境下，则禁止拆开机械硬盘。</p>
+<p>但是到底机械硬盘到底慢在哪里？其实慢就慢在它的这种工作方式。虽然看似7200转每分钟非常快了。但是这依旧比不上采用电子方式的固态硬盘。这就有点像一辆马车与火车在比赛一样，完全没法比的。</p>
+<p>但是机械硬盘的优点也是非常明显的，首先机械硬盘的储存的空间非常大而且它的寿命非常的长，关键一点就是突然断电也不会导致数据的丢失。所以比较适合长时间保存一些数据。</p>
+<p>另外还有一个区别就是机械硬盘与固态硬盘所使用的数据接口不一样，这就像是火车的路只能火车跑，而马车的路不一样什么都能跑。这就导致火车的路不会堵车，而马车的路就不一样。</p>
+<p><strong>固态硬盘</strong></p>
+<p>固态硬盘(Solid State Drive)，简称SSD（固盘），是用固态电子存储芯片阵列而制成的硬盘，由控制单元和存储单元(FLASH芯片、DRAM芯片)以及缓存单元组成。区别于机械硬盘由磁盘、磁头等机械部件构成，整个固态硬盘结构无机械装置，全部是由电子芯片及电路板组成。</p>
+<p>根据固态硬盘的定义，我们可以知道固态硬盘的内部结构，其实就是由<strong>三大块主控芯片、闪存颗粒、缓存单元构成</strong>，那么接下来，我们逐一来看。</p>
+<p><strong>固态硬盘大脑：主控芯片</strong></p>
+<p>正如同CPU之于PC一样，主控芯片其实也和CPU一样，是整个固态硬盘的核心器件，其作用一是合理调配数据在各个闪存芯片上的负荷，二则是承担了整个数据中转，连接闪存芯片和外部SATA接口。</p>
+<p>不同的主控之间能力相差非常大，在数据处理能力、算法上，对闪存芯片的读取写入控制上会有非常大的不同，直接会导致固态硬盘产品在性能上产生很大的差距。</p>
+<p><strong>当前主流的主控芯片厂商有 marvell 迈威（俗称“马牌”）、SandForce、siliconmotion慧荣、phison群联、jmicron智微等</strong>。而这几大主控厂商，又都有着自己的相应特点，应用于不同层级的固态产品。</p>
+<p>以台系厂商siliconmotion慧荣为例，此款主控芯片主要特点在于能够为固态硬盘厂商提供包括软件和硬件在内的一体化主控方案，包括主控芯片、电路板以及存储单元，能够极大的提升产品的更新速度和使用寿命，并且不存在兼容等问题。</p>
+<p><strong>核心器件：闪存颗粒单元</strong></p>
+<p>作为硬盘，存储单元绝对是核心器件。在固态硬盘里面，闪存颗粒则替代了机械磁盘成为了存储单元。</p>
+<p>闪存(Flash Memory)本质上是一种长寿命的非易失性(在断电情况下仍能保持所存储的数据信息)的存储器，数据删除不是以单个的字节为单位而是以固定的区块为单位。</p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-179c1bcc35da84f03338636469fe27d3_720w.webp" alt="img"></p>
+<p>在固态硬盘中，NAND闪存因其具有非易失性存储的特性，即断电后仍能保存数据，被大范围运用。</p>
+<p><strong>根据NAND闪存中电子单元密度的差异，又可以分为SLC（单层次存储单元）、MLC（双层存储单元）以及TLC(三层存储单元)，此三种存储单元在寿命以及造价上有着明显的区别。</strong></p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-b7eed533dced49f54b6d57f240152f71_720w.webp" alt="img"></p>
+<p>SLC（单层式存储），单层电子结构，写入数据时电压变化区间小，寿命长，读写次数在10万次以上，造价高，多用于企业级高端产品。</p>
+<p>MLC（多层式存储），使用高低电压的而不同构建的双层电子结构，寿命长，造价可接受，多用民用高端产品，读写次数在5000左右。</p>
+<p>TLC（三层式存储），是MLC闪存延伸，TLC达到3bit&#x2F;cell。存储密度最高，容量是MLC的1.5倍。 造价成本最低， 使命寿命低，读写次数在1000~2000左右，是当下主流厂商首选闪存颗粒。</p>
+<p>当前，固态硬盘市场中，主流的闪存颗粒厂商主要有toshiba东芝、samsung三星、Intel英特尔、micron美光、skhynix海力士、sandisk闪迪等。</p>
+<p>由于闪存颗粒是固态硬盘中的核心器件，也是主要的存储单元，因而它的制造成本占据了整个产品的70%以上的比重，极端一点说，选择固态硬盘实际上就是在选择闪存颗粒。</p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-4b867455094192dc9d28087d42c59f0e_720w.webp" alt="img"></p>
+<p>固件算法：</p>
+<p>SSD的固件是确保SSD性能的最重要组件，用于驱动控制器。主控将使用SSD中固件算法中的控制程序，去执行自动信号处理，耗损平衡，错误校正码(ECC)，坏块管理、垃圾回收算法、与主机设备(如电脑)通信，以及执行数据加密等任务。由于固件冗余存储至NAND闪存中，因此当SSD制造商发布一个更新时，需要手动更新固件来改进和扩大SSD的功能。</p>
+<p>开发高品质的固件不仅需要精密的工程技术，而且需要在NAND闪存、控制器和其他SSD组件间实现完美整合。此外，还必须掌握NADN特征、半导体工艺和控制器特征等领域的最先进的技术。固件的品质越好，整个SSD就越精确，越高效，目前具备独立固件研发的SSD厂商并不多，仅有Intel&#x2F;英睿达&#x2F;浦科特&#x2F;OCZ&#x2F;三星等厂商，希望我国能早日解决。</p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-fbd57f6adaa8e995d6310f59e515e273_720w.webp" alt="img"></p>
+<p><strong>锦上添花：缓存芯片</strong></p>
+<p>缓存芯片，是固态硬盘三大件中，最容易被人忽视的一块，也是厂商最不愿意投入的一块。和主控芯片、闪存颗粒相比，缓存芯片的作用确实没有那么明显，在用户群体的认知度也没有那么深入，相应的就无法以此为噱头进行鼓吹。</p>
+<p>实际上，缓存芯片的存在意义还是有的，特别是在进行常用文件的随机性读写上，以及碎片文件的快速读写上。</p>
+<p>由于固态硬盘内部的磨损机制，就导致固态硬盘在读写小文件和常用文件时，会不断进行数据的整块的写入缓存，然而导出到闪存颗粒，这个过程需要大量缓存维系。特别是在进行大数量级的碎片文件的读写进程，高缓存的作用更是明显。</p>
+<p><strong>这也解释了为什么没有缓存芯片的固态硬盘在用了一段时间后，开始掉速。</strong></p>
+<p><strong>固态硬盘的颗粒(重中之重)</strong></p>
+<p>闪存颗粒是固态硬盘用来存储数据的东西，分为SLC、MLC、TLC三种，是挑选固态最重要的参数。</p>
+<p>SLC：S是single，单一的意思，如single dog-单身狗。所以，SLC的每个存储单元只存储1bit的数据，这种存储方式稳定性强，读写速度很快，而且不会出错，并且寿命长，因此价格也是最贵的。</p>
+<p>MLC：M是multi，多个的意思，一般我们说的MLC就是指两个，所以，MLC的每个存储单元要放2bit的数据。</p>
+<p>TLC：T是triple，没错，就是“三杀”的那个 triple kill！</p>
+<p>所以，TLC颗粒的每个存储单元要挤3bit的数据。(由于MLC是多个bit的意思，多个包含3个，所以，有些厂商，如三星，会把自家使用TLC颗粒的EVO系列固态硬盘称为“3bit MLC”）</p>
+<p><strong>举个很形象的例子:</strong></p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-f23bf3f7f634997b31150e24066e87aa_720w.webp" alt="img"></p>
+<p>我们把存储空间想象成一个超大的停车场，每一个存储单元就是一个停车位，1bit的数据就是一辆汽车。</p>
+<p>SLC颗粒：1bit独占一个车位，这辆车来去自如，不会出现错误，而且速度很快，由于车位使用频率不高，所以寿命也很长，但是成本很高。</p>
+<p>MLC颗粒：2bit占一个车位，1车2车进出需要管理员调度，效率稍低，所以速度会慢一些，车位使用频率高了一倍，所以寿命也会变短一些。</p>
+<p>TLC颗粒：3bit挤一个车位，进出调度更复杂，效率较低，所以速度慢，还容易出错，寿命短一些。</p>
+<p>现在世界上能自主生产颗粒的厂家有：intel、三星、闪迪、东芝、镁光（英睿达）、海力士。所有正规的固态硬盘使用的都是这几家的检验合格的原厂颗粒。如使用自家颗粒的inter、三星、闪迪、镁光（英睿达）、东芝等；还有虽然自己不会生产颗粒，但是使用从原厂购买颗粒的浦科特、海盗船、建兴等，所以购买时可以优选选择这些品牌。</p>
+<p>市面上还有一些使用“白片”、“黑片”颗粒的固态硬盘的厂家，“白片”是指原厂检验不合格的瑕疵品，被偷偷卖给下游工厂来制作固态硬盘。“黑片”是连白片都比不上的废片，这类硬盘价格通常会远低于原厂颗粒的硬盘，给人一种“高性价比”的错觉。</p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-dcaf08be0aa955fc6f373239be0d53b9_720w.webp" alt="img"></p>
+<p><strong>主控</strong></p>
+<p>如果说存储空间是一个超大的停车场，那么主控就是这个超大停车场的“管理员”啦，他负责指挥每一辆车准确、合理的进出自己的停车位。</p>
+<p>对于这么大的一个停车场，特别是三辆车挤一个车位的TLC颗粒的停车场来说，管理员是操碎了心，每天都累成狗一样。所以这个主控“管理员”必须要有过硬的身体素质（硬件要好）和扎实的管理方法（固件要好）。</p>
+<p>好的主控+优秀的固件就相当于让受过专业训练的交警来管理停车场，而渣的主控+渣的固件就相当于让一个骨瘦如柴，没有受过教育和训练的人来管理，所以啊，即使你的停车场修的很牢固，但是没用多久，管理员先累死了，整个停车场也就不能用了。</p>
+<p><strong>接口、总线、协议</strong></p>
+<p>由于近些年固态硬盘发展的很快，新老产品技术交替，所以市面上固态硬盘的接口、协议等有些乱七八糟的，他们之间有着剪不断，理还乱的关系。</p>
+<p><strong>接口：</strong></p>
+<p>接口就是把几条导电的铜线做成不同形状的插头。市面上主流的固态硬盘接口有 SATA、mSATA、m.2、PCI-E插槽这4种。</p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-a69ecb35d5b1547a65a0968db9bb5e77_720w.webp" alt="img"></p>
+<p>他们之间除了在外观上有不同外，性能上也有较大的区别。</p>
+<p><strong>总线：</strong></p>
+<p>总线是我们看不到的东西，可以理解为数据传输的“公路”，有sata总线和PCI-e总线两种。</p>
+<p>假如我们要从P城开车到Y城，走PCI-E总线就相当于走两地直达的高速公路，而走SATA总线的就相当于走了比较绕的城乡公路。</p>
+<p>PCI-E总线又有几个等级，PCIE×1、PCIE×2、PCIE×4、PCIE×8、PCIE×16，数字越大，速度就越快。目前的固态硬盘都是用的×2、×4这个等级的，其中×4的最大速度已经可以达到 3000 MB&#x2F;s以上了。说到这，有机灵的小伙伴可能已经想到了我们用的显卡早就已经是 ×16的级别了。</p>
+<p><strong>最后是协议</strong></p>
+<p>前面已经说了，PCI-E ×4 是一条平坦的高速公路，但是我们都知道，现实中的高速公路上每辆车的车速也是不同的，跑车总是会比轿车快。而拥有NVMe协议的固态硬盘就相当于专门针对这条平坦的高速公路而设计的超级跑车。同样是走的PCI-E ×4 的车道，不支持NVMe协议的硬盘最大只能跑1500MB&#x2F;s，而支持NVMe协议的硬盘就可以跑到3000MB&#x2F;s甚至以上。</p>
+<p><strong>4KB随机读写</strong></p>
+<p>固态硬盘虽然顺序读写速度超快，但是那是只有在读写一整个大文件（如一部电影）时才能体会到它的优势，而影响我们日常使用的是硬盘的4K 随机读写速度（这里的4K是4KB）。</p>
+<p><strong>举个例子：</strong></p>
+<p>小明去一个大商场买东西，售货员问小明：“你要买什么呢？”</p>
+<p>小明说：“阿姨，我要买一台大电视！”“好的！”虽然电视很大很重，但是售货员只要跑一趟花点力气就能把大电视给小明拿过来。这就是大文件的持续读写速度。</p>
+<p>小明又说：“阿姨，我要一颗小白兔奶糖、一包辣条、一瓶可乐、一只铅笔、一个小猪佩奇、一卷卫生纸……”售货员：“#￥@%……&amp;”这些东西虽然又轻又小，但是量多，售货员阿姨就要跑很多地方才能完成小明的请求，速度自然就慢了下来，这就是4kb随机读写。</p>
+<p>很遗憾的是我们日常使用电脑时大多都是这种小文件的随机读写。所以，我们在挑选固态的时候要重点关注一下硬盘的4k随机读写性能。</p>
+<p><strong>NVMe</strong></p>
+<p>NVMe是为SSD所生的。NVMe出现之前，SSD绝大多数走的是AHCI和SATA的协议，后者其实是为传统HDD服务的。与HDD相比，SSD具有更低的延时和更高的性能，AHCI已经不能跟上SSD性能发展的步伐了，已经成为制约SSD性能的瓶颈。</p>
+<p>跟ATA spec中定义的命令相比，NVMe的命令个数少了很多，完全是为SSD量身定制的。</p>
+<p>NVMe有三宝：Submission Queue （SQ），Completion Queue（CQ）和Doorbell Register （DB）。 SQ和CQ位于Host的内存中，DB则位于SSD的控制器内部。上图：</p>
+<p><img src="/2023/03/02/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98/v2-5502f9968138cf6b36545a740c2d68d1_720w.webp" alt="img"></p>
+<p>SQ和CQ在Host的memory中以及DB在SSD端，上图中的NVMe Subsystem一般就是SSD。</p>
+<p>SQ位于Host内存中，Host要发送命令时，先把准备好的命令放在SQ中，然后通知SSD来取；CQ也是位于Host内存中，一个命令执行完成，成功或失败，SSD总会往CQ中写入命令完成状态。</p>
+<p>DB又是干什么用的呢？Host发送命令时，不是直接往SSD中发送命令的，而是把命令准备好放在自己的内存中，那怎么通知SSD来获取命令执行呢？Host就是通过写SSD端的DB寄存器来告知SSD的。这样的速度就非常快了。</p>
+<p>所以总结一下如何挑选固态硬盘？</p>
+<p>1：先看储存颗粒，再看颗粒类型。</p>
+<p>2：查看硬盘主控。</p>
+<p>3：缓存大小，及所使用的传输协议。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Keep me coding</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Zhao Zhejian 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Zhao Zhejian 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%A1%AC%E4%BB%B6/" rel="tag"># 硬件</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/12/23/%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BDHexo%E5%8D%9A%E5%AE%A2/" rel="prev" title="自动备份Hexo博客">
+                  <i class="fa fa-chevron-left"></i> 自动备份Hexo博客
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/03/10/C-%E2%80%94%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93/" rel="next" title="C++—类的总结">
+                  C++—类的总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhao Zhejian</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"cosmogram/cosmogram.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

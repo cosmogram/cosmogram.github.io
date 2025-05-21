@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cosmogram.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="CPU调度即按一定的调度算法从就绪队列中选择一个进程，把CPU的使用权交给被选中的进程，如果没有就绪进程，系统会安排一个系统空闲进程或idle进程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CPU调度">
+<meta property="og:url" content="https://cosmogram.github.io/2019/06/06/CPU%E8%B0%83%E5%BA%A6/index.html">
+<meta property="og:site_name" content="CosmoGram">
+<meta property="og:description" content="CPU调度即按一定的调度算法从就绪队列中选择一个进程，把CPU的使用权交给被选中的进程，如果没有就绪进程，系统会安排一个系统空闲进程或idle进程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/06/CPU%E8%B0%83%E5%BA%A6/2018051914403322.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/06/CPU%E8%B0%83%E5%BA%A6/20180519150007238.png">
+<meta property="og:image" content="https://cosmogram.github.io/2019/06/06/CPU%E8%B0%83%E5%BA%A6/20180519150223474.png">
+<meta property="article:published_time" content="2019-06-06T01:58:43.000Z">
+<meta property="article:author" content="Zhao Zhejian">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cosmogram.github.io/2019/06/06/CPU%E8%B0%83%E5%BA%A6/2018051914403322.png">
+
+
+<link rel="canonical" href="https://cosmogram.github.io/2019/06/06/CPU%E8%B0%83%E5%BA%A6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://cosmogram.github.io/2019/06/06/CPU%E8%B0%83%E5%BA%A6/","path":"2019/06/06/CPU调度/","title":"CPU调度"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CPU调度 | CosmoGram</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CosmoGram</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZZJ's Blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CPU%E8%B0%83%E5%BA%A6"><span class="nav-number">1.</span> <span class="nav-text">CPU调度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CPU%E8%B0%83%E5%BA%A6%E6%97%B6%E6%9C%BA"><span class="nav-number">2.</span> <span class="nav-text">CPU调度时机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%88%87%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">进程切换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CPU%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95%E8%A1%A1%E9%87%8F%E6%8C%87%E6%A0%87"><span class="nav-number">4.</span> <span class="nav-text">CPU调度算法衡量指标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%B9%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F%E4%B8%AD%E9%87%87%E7%94%A8%E7%9A%84%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">批处理系统中采用的调度算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%A4%E4%BA%92%E5%BC%8F%E7%B3%BB%E7%BB%9F%E9%87%87%E7%94%A8%E7%9A%84%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95"><span class="nav-number">6.</span> <span class="nav-text">交互式系统采用的调度算法</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zhao Zhejian"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Zhao Zhejian</p>
+  <div class="site-description" itemprop="description">愚者困惑，智者提问</div>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cosmogram" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/zhaozhejian@mail.ustc.edu.cn" title="E-Mail → zhaozhejian@mail.ustc.edu.cn"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/291014857" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;291014857" rel="noopener" target="_blank"><i class="fa custom bilibili fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/CosmogramZhao" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/zhaozhejian" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;zhaozhejian" rel="noopener" target="_blank"><i class="fab fa-facebook fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/CosmogramZhao" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;CosmogramZhao" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/id/cosmogram" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;id&#x2F;cosmogram" rel="noopener" target="_blank"><i class="fab fa-steam fa-fw"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://zzj960.github.io/" title="https:&#x2F;&#x2F;zzj960.github.io&#x2F;" rel="noopener" target="_blank">My first blog (abandoned)</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cosmogram.github.io/2019/06/06/CPU%E8%B0%83%E5%BA%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhao Zhejian">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CosmoGram">
+      <meta itemprop="description" content="愚者困惑，智者提问">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CPU调度 | CosmoGram">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CPU调度
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-06-06 09:58:43" itemprop="dateCreated datePublished" datetime="2019-06-06T09:58:43+08:00">2019-06-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">进程管理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="CPU调度"><a href="#CPU调度" class="headerlink" title="CPU调度"></a>CPU调度</h1><p>即按一定的调度算法从就绪队列中选择一个进程，把CPU的使用权交给被选中的进程，如果没有就绪进程，系统会安排一个系统空闲进程或idle进程。</p>
+<span id="more"></span>
+
+<h1 id="CPU调度时机"><a href="#CPU调度时机" class="headerlink" title="CPU调度时机"></a>CPU调度时机</h1><p>发生在内核对中断&#x2F;异常&#x2F;系统调用处理后返回到用户态时，具体来说有以下情况：</p>
+<ul>
+<li>进程正常终止 或 由于某种错误而终止；</li>
+<li>新进程创建 或 一个等待进程变成就绪；</li>
+<li>当一个进程从运行态进入阻塞态；</li>
+<li>当一个进程从运行态变为就绪态。</li>
+</ul>
+<h1 id="进程切换"><a href="#进程切换" class="headerlink" title="进程切换"></a>进程切换</h1><p>是指一个进程让出处理器，由另一个进程占用处理器的过程，包括以下两部分工作：</p>
+<ul>
+<li>切换全局页目录以加载一个新的地址空间；</li>
+<li>切换内核栈和硬件上下文，其中硬件上下文包括了内核执行新进程需要的全部信息，如CPU相关寄存器。</li>
+</ul>
+<h1 id="CPU调度算法衡量指标"><a href="#CPU调度算法衡量指标" class="headerlink" title="CPU调度算法衡量指标"></a>CPU调度算法衡量指标</h1><ul>
+<li>吞吐量 （Throughput）： 每单位时间完成的进程数目；</li>
+<li>周转时间TT (Turnaround Time)：每个进程从提出请求到运行完成的时间；</li>
+<li>响应时间RT(Response Time)：从提出请求到第一次回应的时间；</li>
+<li>CPU利用率(CPU Utilization)：CPU做有效工作的时间比例；</li>
+<li>等待时间(Waiting time)：每个进程在就绪队列(ready queue)中等待的时间；</li>
+<li>……</li>
+</ul>
+<h1 id="批处理系统中采用的调度算法"><a href="#批处理系统中采用的调度算法" class="headerlink" title="批处理系统中采用的调度算法"></a>批处理系统中采用的调度算法</h1><blockquote>
+<p>衡量指标：吞吐量，周转时间，CPU利用率，公平平衡</p>
+</blockquote>
+<p><strong>先来先服务算法（FCFS——First Come First Serve）</strong>：按照进程就绪的先后顺序使用CPU。特点：非抢占，公平，实现简单，长进程后面的短进程需要等很长时间，不利于用户体验。</p>
+<p><strong>最短作业优先（SJF——Shortest Job First）</strong>：具有最短完成时间的进程优先执行，非抢占。<br><strong>最短剩余时间优先（SRTN——Shortest Remaining Time Next）</strong>：SJF抢占式版本，即当一个新就绪的进程比当前运行进程具有更短完成时间时，系统抢占当前进程，选择新就绪的进程执行。<br>特点：有最短的平均周转时间，但不公平，源源不断的短任务到来，可能使长的任务长时间得不到运行，从而产生 “饥饿”现象 (starvation)。</p>
+<p><strong>最高响应比优先算法（HRRN——Highest Response Ratio Next）</strong>：是一个综合算法，调度时，首先计算每个进程的响应比R，之后总是选择R最高的进程执行。<br>{响应比R &#x3D; 周转时间 &#x2F; 处理时间 &#x3D;（处理时间 + 等待时间）&#x2F; 处理时间 &#x3D; 1 +（等待时间 &#x2F; 处理时间）}<br>特点：折中权衡</p>
+<h1 id="交互式系统采用的调度算法"><a href="#交互式系统采用的调度算法" class="headerlink" title="交互式系统采用的调度算法"></a>交互式系统采用的调度算法</h1><blockquote>
+<p>衡量指标：响应时间，公平平衡。</p>
+</blockquote>
+<p><strong>时间片轮转调度算法（Round Robin——RR）</strong>： 每个进程被分配一个时间片，允许该进程在该时间段运行，如果在时间片结束时该进程还在运行，则剥夺CPU并分配给另一个进程，如果该进程在时间片结RR束前阻塞或结束，则CPU立即进行切换。<br>特点：公平；有利于交互式计算，响应时间快；由于进程切换，时间片轮转算法要花费较高的开销；对进程表中不同进程的大小差异较大的有利，而对进程都是相同大小的不利。</p>
+<p><strong>虚拟轮转法（Virtual RR）</strong>：主要基于时间片轮转法进行改进，解决在CPU调度中对于I&#x2F;O密集型进程的不友好。其设置了一个辅助队列，对于I&#x2F;O型进程执行完一个时间片之后，则进入辅助队列，CPU调度时总是先检查辅助队列是否为空，如果不为空总是优先调度辅助队列里的进程，直到为空，才调度就绪队列的进程。<br><img src="/2019/06/06/CPU%E8%B0%83%E5%BA%A6/2018051914403322.png" alt="img"></p>
+<p><strong>优先级调度算法（Priority Scheduling Algorithm——PSA）</strong>即给每个作业一个优先级，优先级越高越紧迫，应该先执行。通常：系统进程优先级高于用户进程；前台进程优先级高于后台进程；操作系统更偏好 I&#x2F;O型进程。<br>特点：实现简单，但不公平，可能导致优先级低的进程产生饥饿现象；<br>可能产生优先级反转问题（基于优先级的抢占式算法），即一个低优先级进程持有一个高优先级进程所需要的资源，使得高优先级进程等待低优先级进程运行。</p>
+<p><strong>多级反馈队列调度算法（Multilevel Feedback）</strong>：设置多个就绪队列，并为各个队列赋予不同的优先级。第一个队列的优先级最高，依次递减优先级。对于各个队列进程执行时间片的大小也不同，优先级越高的队列，分配到的时间片越少。当第一级队列为空时，再第二级队列进行调度，依次类推，各级队列按照时间片轮转方式进行调度。当一个新进程创建后，首先把它放入第一队列的末尾。按照FCFS原则排队等待调度。当轮到该进程执行时，如它在该时间片完成，便可准备撤离系统，如果它在一个时间片结束时尚未完成，则调度程序便将该进程转入第二队列的末尾，再同样地按照FCFS原则等待调度执行。依次类推。<br>特点：更偏好I&#x2F;O型进程，对CPU型进程不太友好。<br><img src="/2019/06/06/CPU%E8%B0%83%E5%BA%A6/20180519150007238.png" alt="img"></p>
+<p>各种调度算法总结比较：<br><img src="/2019/06/06/CPU%E8%B0%83%E5%BA%A6/20180519150223474.png" alt="img"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Keep me coding</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Zhao Zhejian 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Zhao Zhejian 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/06/05/%E7%BA%BF%E7%A8%8B/" rel="prev" title="线程">
+                  <i class="fa fa-chevron-left"></i> 线程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/06/07/%E8%BF%9B%E7%A8%8B%E5%90%8C%E6%AD%A5/" rel="next" title="进程同步">
+                  进程同步 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhao Zhejian</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"cosmogram/cosmogram.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
